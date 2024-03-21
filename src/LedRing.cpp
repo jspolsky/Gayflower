@@ -33,6 +33,9 @@ void setup() {
   FastLED.addLeds<LED_TYPE, DATA_PIN, COLOR_ORDER>(leds, NUM_LEDS).setCorrection(TypicalLEDStrip);
   FastLED.setBrightness(BRIGHTNESS);
 
+  leds[0]= CRGB::Green;     // just show an indicator that LEDs are initialized
+  FastLED.show();
+
 }
 
 void loop() {

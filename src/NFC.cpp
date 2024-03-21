@@ -2,6 +2,8 @@
 #include <Wire.h>
 #include <SPI.h>
 #include <Adafruit_PN532.h>
+#include "LedRing.h"
+
 namespace NFC {
 
 const uint8_t PN532_SCK = 13;
@@ -12,17 +14,22 @@ Adafruit_PN532 nfc(PN532_SCK, PN532_MISO, PN532_MOSI, PN532_SS);
 
 
 void setup() {
-  nfc.begin();
+  
+  while (!nfc.begin())
+  {
+    delay(100);
+  }
 
   uint32_t versiondata = false;
-
   while (!versiondata) {
     versiondata = nfc.getFirmwareVersion();
     if (!versiondata)
+    {
       Serial.println("Didn't find PN53x board");
-    // imperically, sometimes this thing doesn't respond right away.
-    // If you try a few times it eventually appears.
-    delay(10);
+      // imperically, sometimes this thing doesn't respond right away.
+      // If you try a few times it eventually appears.
+      delay(100);
+    }
   }
 
   // Got ok data, print it out!
