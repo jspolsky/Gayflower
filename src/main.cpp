@@ -1,12 +1,16 @@
 #include <Arduino.h>
 #include "LedRing.h"
 #include "NFC.h"
+#include "RelayOut.h"
 
 void setup(void) {
+
+  RelayOut::setup();
   Serial.begin(115200);
   Serial.println("Hello!");
   LedRing::setup();
   NFC::setup();
+
 }
 
 void loop(void) {
@@ -25,10 +29,13 @@ void loop(void) {
     LedRing::setMode(LedRing::modeReading);
     bReading = false;
     msLastSuccessfulRead = millis();
+    RelayOut::power(true);
   }
 
-  if (millis() - msLastSuccessfulRead > 1000)
+  if (millis() - msLastSuccessfulRead > 1000) {
     bReading = true;
+    RelayOut::power(false);
+  }
 
   LedRing::loop();
 
