@@ -2,12 +2,27 @@ const express = require('express');
 const app = express();
 const http = require('http');
 const server = http.createServer(app);
-
-const secondsToPump = 90;           // this should be configurable from web UI
-
-var net = require('net');
+const net = require('net');
 var connectedclients = [];
-var okToSwipe = true;              // for debugging only. 1 means next swipe will be allowed
+
+
+const getPumpTimeInSeconds = () => { 
+
+    // UNDONE - should be configurable from web UI
+    return 90; 
+
+}
+
+var toggle = false;
+const okToPump = (swipe) => {
+
+    // UNDONE - look up if the swipe code is valid and entitled to a pump
+    // UNDONE - for debugging now it just alternates between true and false
+
+    toggle = !toggle;
+    return toggle;
+
+}
 
 var tcpserver = net.createServer( (connection) => {
 
@@ -23,19 +38,16 @@ var tcpserver = net.createServer( (connection) => {
             }
             else if (requestArray[0] === 'SWIP' && requestArray.length > 1) {
                 
-                // this is where we should be looking up if requestArray[1] is a valid
-                // card ID
-
-                if (okToSwipe)
+                if (okToPump(requestArray[1]))
                 {
-                    connection.write(`200 OK ${secondsToPump}\r\n`);
+                    connection.write(`200 OK ${getPumpTimeInSeconds()}\r\n`);
 
                     // tell ALL the connected clients that they can turn on the water
                     // one of them has got ot be connected to a pump!
                     var i = 0;
                     while (i < connectedclients.length)
                     {
-                        connectedclients[i].write(`PUMP ${secondsToPump}\r\n`);
+                        connectedclients[i].write(`PUMP ${getPumpTimeInSeconds()}\r\n`);
                         i++;
                     }
                 
@@ -44,7 +56,6 @@ var tcpserver = net.createServer( (connection) => {
                 {
                     connection.write('401 Unauthorized\r\n');
                 }
-                okToSwipe = !okToSwipe;
             }
             else {
                 connection.write(`400 Message not understood. Try SWIP\r\n`)
@@ -83,6 +94,6 @@ app.get('/', (req, res) => {
 
 });
 
-server.listen(3000, () => {
-  console.log('listening on *:3000');
+server.listen(80, () => {
+  console.log('listening on localhost:80');
 });
