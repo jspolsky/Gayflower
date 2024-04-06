@@ -1,0 +1,8 @@
+{
+    "name": "gayflower-server",
+    "version": "0.0.1",
+    "description": "server for gayflower water management system",
+    "dependencies": {
+        "express": "^4.19.2"
+    }
+}
