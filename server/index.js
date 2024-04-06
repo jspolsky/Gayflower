@@ -84,14 +84,6 @@ app.get('/', (req, res) => {
     res.send(`<h1>Future Turtles Gayflower</h1>
             <p>${connectionCount} clients connected</p>`);
 
-    var i = 0;
-    while (i < connectionCount)
-    {
-        connectedclients[i].write('100 INFO random web request\r\n');
-        i++;
-    }
-
-
 });
 
 server.listen(80, () => {
