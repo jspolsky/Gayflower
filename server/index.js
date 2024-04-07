@@ -29,6 +29,15 @@ var tcpserver = net.createServer( (connection) => {
     console.log(`client connected remote port ${connection.remotePort}`);
     connectedclients.push(connection);
 
+    connection.on("error", (err) => {
+      console.log("caught exception:");
+      console.log(err.stack);
+      if (err.message === "read ECONNRESET") {
+        const ix = connectedclients.indexOf(connection);
+        if (ix >= 0) connectedclients.splice(ix, 1);
+      }
+    });
+
     connection.on('data', (data) => {
         const requestArray = data.toString().replace(/\r?\n|\r/g,"").split(/\s/);
         if (requestArray.length > 0)
