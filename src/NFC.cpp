@@ -12,7 +12,6 @@ const uint8_t PN532_SS = 2;
 const uint8_t PN532_MISO = 12;
 Adafruit_PN532 nfc(PN532_SCK, PN532_MISO, PN532_MOSI, PN532_SS);
 
-
 void setup() {
   
   while (!nfc.begin())
@@ -45,7 +44,22 @@ void setup() {
 
 bool loop(uint8_t *uid, uint8_t *uidLength) {
 
+  // don't try to read more than once a second or so
+  static bool bReading = true;
+  static uint32_t msLastSuccessfulRead = 0;
   uint8_t success;
+
+  if (!bReading)
+  {
+    if (millis() - msLastSuccessfulRead > 1000)
+    {
+      bReading = true;
+    }
+    else
+    {
+      return false;
+    }
+  }
 
   // Wait for an ISO14443A type cards (Mifare, etc.).  When one is found
   // 'uid' will be populated with the UID, and uidLength will indicate
@@ -56,6 +70,7 @@ bool loop(uint8_t *uid, uint8_t *uidLength) {
   // use a shorter timeout for smoother LED animation....
 
   if (success) {
+    LedRing::setMode(LedRing::modeReading);
     // Display some basic information about the card
     Serial.println("Found an ISO14443A card");
     Serial.print("  UID Length: ");
@@ -64,6 +79,9 @@ bool loop(uint8_t *uid, uint8_t *uidLength) {
     Serial.print("  UID Value: ");
     nfc.PrintHex(uid, *uidLength);
     Serial.println("");
+
+    bReading = false; // don't read again for 1000 ms
+    msLastSuccessfulRead = millis();
   }
 
   return success;

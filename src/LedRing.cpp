@@ -22,99 +22,140 @@ CRGB leds[NUM_LEDS];
 mode_t mode = modeReady;
 uint32_t msModeStartTime;
 
-void setMode(mode_t modeNew)
+void setMode(const mode_t _mode)
 {
-  mode = modeNew;
+  mode = _mode;
   msModeStartTime = millis();
+  loop();
 }
 
 void setup() {
 
   FastLED.addLeds<LED_TYPE, DATA_PIN, COLOR_ORDER>(leds, NUM_LEDS).setCorrection(TypicalLEDStrip);
   FastLED.setBrightness(BRIGHTNESS);
-
-  leds[0]= CRGB::Green;     // just show an indicator that LEDs are initialized
-  FastLED.show();
-
+  setMode(modeWakeUp);
 }
 
-void loop() {
+void loop()
+{
 
+  switch (mode)
+  {
 
-  switch (mode) {
+  case modeWakeUp:
+    leds[0] = CRGB::Green;
+    fill_solid(leds + 1, NUM_LEDS - 1, CRGB::Black);
+    break;
 
-    case modeReady:
-      fill_solid(leds, NUM_LEDS, CHSV(160, 212, beatsin8(BPM, 64, 192)));
-      break;
+  case modeNFCSetup:
+    leds[0] = CRGB::Green;
+    leds[1] = CRGB::Yellow;
+    fill_solid(leds + 2, NUM_LEDS - 2, CRGB::Black);
+    break;
 
-    case modeReading:
+  case modeNFCSetupComplete:
+    leds[0] = leds[1] = CRGB::Green;
+    fill_solid(leds + 2, NUM_LEDS - 2, CRGB::Black);
+    break;
+
+  case modeTryDHCP:
+    leds[0] = leds[1] = CRGB::Green;
+    leds[2] = CRGB::Yellow;
+    fill_solid(leds + 3, NUM_LEDS - 3, CRGB::Black);
+    break;
+
+  case modeDHCPFailed:
+    leds[0] = leds[1] = CRGB::Green;
+    leds[2] = CRGB::Red;
+    fill_solid(leds + 3, NUM_LEDS - 3, CRGB::Black);
+    break;
+
+  case modeDHCPSuccess:
+    fill_solid(leds, 3, CRGB::Green);
+    fill_solid(leds + 3, NUM_LEDS - 3, CRGB::Black);
+    break;
+
+  case modeTryServer:
+    fill_solid(leds, 3, CRGB::Green);
+    leds[3] = CRGB::Yellow;
+    fill_solid(leds + 4, NUM_LEDS - 4, CRGB::Black);
+    break;
+
+  case modeServerFailed:
+    fill_solid(leds, 3, CRGB::Green);
+    leds[3] = CRGB::Red;
+    fill_solid(leds + 4, NUM_LEDS - 4, CRGB::Black);
+    break;
+
+  case modeReady:
+    fill_solid(leds, NUM_LEDS, CHSV(160, 212, beatsin8(BPM, 64, 192)));
+    break;
+
+  case modeReading:
+    fill_solid(leds, NUM_LEDS, CRGB::Black);
+    {
+      uint32_t elapsedTime = millis() - msModeStartTime;
+      if (elapsedTime < READING_SPEED)
+      {
+        int curPos = elapsedTime / (READING_SPEED / (NUM_LEDS * READING_LOOPS));
+        CRGB color = CRGB::White;
+        uint8_t tailLength = 6;
+        while (curPos >= 0 && curPos < NUM_LEDS * READING_LOOPS && tailLength)
+        {
+          leds[curPos % NUM_LEDS] = color;
+          curPos--;
+          tailLength--;
+          color.subtractFromRGB(40);
+        }
+      }
+      else
+      {
+        mode = modeFail;
+        msModeStartTime = millis();
+      }
+    }
+    break;
+
+  case modeFail:
+  {
+    fill_solid(leds, NUM_LEDS, CRGB::Red);
+    leds[0] = leds[3] = leds[6] = leds[9] = CRGB::Black;
+    uint32_t elapsedTime = millis() - msModeStartTime;
+    if (elapsedTime > FAIL_DISPLAY_TIME)
+    {
+      mode = modeSuccess;
+      msModeStartTime = millis();
+    }
+  }
+  break;
+
+  case modeSuccess:
+  {
+    leds[0] = leds[1] = CRGB::Red;
+    leds[2] = leds[3] = leds[4] = CRGB::Orange;
+    leds[5] = leds[6] = leds[7] = leds[8] = leds[9] = leds[10] = leds[11] = CRGB::Green;
+    uint32_t elapsedTime = millis() - msModeStartTime;
+    if (elapsedTime < HOW_MUCH_WATER)
+    {
+      int curPos = NUM_LEDS - elapsedTime / (HOW_MUCH_WATER / NUM_LEDS);
+      for (int i = curPos; i < NUM_LEDS; i++)
+      {
+        leds[i] = CRGB::Black;
+      }
+    }
+    else
+    {
       fill_solid(leds, NUM_LEDS, CRGB::Black);
-      {
-        uint32_t elapsedTime = millis() - msModeStartTime;
-        if (elapsedTime < READING_SPEED)
-        {
-          int curPos = elapsedTime / (READING_SPEED / (NUM_LEDS * READING_LOOPS));
-          CRGB color = CRGB::White;
-          uint8_t tailLength = 6;
-          while (curPos >= 0 && curPos < NUM_LEDS * READING_LOOPS && tailLength)
-          {
-            leds[curPos % NUM_LEDS] = color;
-            curPos--;
-            tailLength--;
-            color.subtractFromRGB(40);
-          }
-        }
-        else
-        {
-          mode = modeFail;
-          msModeStartTime = millis();
-        }
-      }
-      break;
+      mode = modeReady;
+    }
+  }
+  break;
 
-    case modeFail:
-      {
-        fill_solid(leds, NUM_LEDS, CRGB::Red);
-        leds[0] = leds[3] = leds[6] = leds[9] = CRGB::Black;
-        uint32_t elapsedTime = millis() - msModeStartTime;
-        if (elapsedTime > FAIL_DISPLAY_TIME)
-        {
-          mode = modeSuccess;
-          msModeStartTime = millis();
-        }
-      }
-      break;
-
-    case modeSuccess:
-      {
-        leds[0] = leds[1] = CRGB::Red;
-        leds[2] = leds[3] = leds[4] = CRGB::Orange;
-        leds[5] = leds[6] = leds[7] = leds[8] = leds[9] = leds[10] = leds[11] = CRGB::Green;
-        uint32_t elapsedTime = millis() - msModeStartTime;
-        if (elapsedTime < HOW_MUCH_WATER)
-        {
-          int curPos = NUM_LEDS - elapsedTime / (HOW_MUCH_WATER / NUM_LEDS);
-          for (int i = curPos; i < NUM_LEDS; i++)
-          {
-            leds[i] = CRGB::Black;
-          }
-        }
-        else
-        {
-          fill_solid(leds, NUM_LEDS, CRGB::Black);
-          mode = modeReady;
-        }
-      }
-      break;
-
-    default:
-      fill_solid(leds, NUM_LEDS, CRGB::Black);
-      break;
+  default:
+    fill_solid(leds, NUM_LEDS, CRGB::Black);
+    break;
   }
 
-  
-
   FastLED.show();
 }
-
 };
