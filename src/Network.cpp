@@ -27,7 +27,7 @@ namespace Network
             byte mac[6];
             teensyMAC(mac);
 
-            if (Ethernet.begin(mac, 15000UL, 4000UL) == 0)
+            if (Ethernet.begin(mac, 30000UL, 4000UL) == 0)
             {
                 LedRing::setMode(LedRing::modeDHCPFailed);
                 Serial.println("Unable to get an IP address from a DHCP server.");
@@ -72,12 +72,30 @@ namespace Network
 
     void loop()
     {
+        static char msg[128];
+        static char *pchNext = msg;
+        static uint8_t cb = 0;
+
         // if there are incoming bytes available
         // from the server, read them and print them:
-        if (client.available())
+        while (client.available())
         {
-            char c = client.read();
-            Serial.print(c);
+            *pchNext = client.read();
+            if (*pchNext == '\r' || *pchNext == '\n' || cb == 126)
+            {
+                *pchNext = '\0';
+                if (cb > 0)
+                {
+                    Serial.printf("Message from server [%s]\n", msg);
+                }
+                pchNext = msg;
+                cb = 0;
+            }
+            else
+            {
+                pchNext++;
+                cb++;
+            }
         }
 
         // if the server's disconnected, stop the client, and try to reestablish it.
@@ -88,5 +106,24 @@ namespace Network
             client.stop();
             setup();
         }
+    }
+
+    // send swipe message
+    void swipe(uint8_t *uid, uint8_t uidLength)
+    {
+        char msg[32];
+        char *pmsg = msg;
+
+        pmsg += sprintf(pmsg, "SWIP ");
+        while (uidLength)
+        {
+            pmsg += sprintf(pmsg, "%02x", *uid++);
+            uidLength--;
+        }
+
+        sprintf(pmsg, "\r\n");
+
+        Serial.println(msg);
+        client.write(msg);
     }
 }
