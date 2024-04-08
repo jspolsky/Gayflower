@@ -39,6 +39,7 @@ var tcpserver = net.createServer( (connection) => {
     });
 
     connection.on('data', (data) => {
+        console.log(data.toString());
         const requestArray = data.toString().replace(/\r?\n|\r/g,"").split(/\s/);
         if (requestArray.length > 0)
         {
