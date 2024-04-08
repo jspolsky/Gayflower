@@ -70,8 +70,11 @@ namespace Network
         }
     }
 
-    void loop()
+    result_t loop(uint32_t *piPumpTimeInSeconds)
     {
+        *piPumpTimeInSeconds = 0;
+        result_t result = resultNoop;
+
         static char msg[128];
         static char *pchNext = msg;
         static uint8_t cb = 0;
@@ -87,6 +90,20 @@ namespace Network
                 if (cb > 0)
                 {
                     Serial.printf("Message from server [%s]\n", msg);
+                    if (!strncmp(msg, "401 ", 4))
+                    {
+                        result = resultUnauthorized;
+                    }
+                    else if (!strncmp(msg, "PUMP ", 5))
+                    {
+                        result = resultPump;
+                        // UNDONE READ TIME into *piPumpTimeInSeconds
+                    }
+                    else if (!strncmp(msg, "200 ", 4))
+                    {
+                        result = resultAuthorized;
+                        // UNDONE READ TIME into *piPumpTimeInSeconds
+                    }
                 }
                 pchNext = msg;
                 cb = 0;
@@ -106,6 +123,8 @@ namespace Network
             client.stop();
             setup();
         }
+
+        return result;
     }
 
     // send swipe message

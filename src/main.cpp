@@ -25,7 +25,30 @@ void loop(void)
   uint8_t uidLength;                        // Length of the UID (4 or 7 bytes depending on ISO14443A card type)
 
   LedRing::loop();
-  Network::loop();
+
+  uint32_t iPumpTimeInSeconds;
+  Network::result_t result = Network::loop(&iPumpTimeInSeconds);
+
+  switch (result)
+  {
+
+  case Network::resultPump:
+    Serial.println("GOTTA PUMP");
+    break;
+
+  case Network::resultAuthorized:
+    Serial.println("AUTH");
+    break;
+
+  case Network::resultUnauthorized:
+    Serial.println("NO AUTH");
+    break;
+
+  case Network::resultNoop:
+  default:
+    break;
+  }
+
   if (NFC::loop(uid, &uidLength))
   {
     Serial.println("Successful read");
