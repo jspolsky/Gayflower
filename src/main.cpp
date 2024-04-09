@@ -33,11 +33,11 @@ void loop(void)
   {
 
   case Network::resultPump:
-    Serial.println("GOTTA PUMP");
+    Serial.printf("GOTTA PUMP %d\n", iPumpTimeInSeconds);
     break;
 
   case Network::resultAuthorized:
-    Serial.println("AUTH");
+    Serial.printf("AUTH %d\n", iPumpTimeInSeconds);
     break;
 
   case Network::resultUnauthorized:

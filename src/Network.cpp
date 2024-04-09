@@ -97,12 +97,12 @@ namespace Network
                     else if (!strncmp(msg, "PUMP ", 5))
                     {
                         result = resultPump;
-                        // UNDONE READ TIME into *piPumpTimeInSeconds
+                        *piPumpTimeInSeconds = atoi(msg + 5);
                     }
                     else if (!strncmp(msg, "200 ", 4))
                     {
                         result = resultAuthorized;
-                        // UNDONE READ TIME into *piPumpTimeInSeconds
+                        *piPumpTimeInSeconds = atoi(msg + 7);
                     }
                 }
                 pchNext = msg;
