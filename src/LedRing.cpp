@@ -14,19 +14,25 @@ namespace LedRing {
 CRGB leds[NUM_LEDS];
 
 #define BRIGHTNESS 196
-#define READING_SPEED 850
-#define READING_LOOPS 3
 #define FAIL_DISPLAY_TIME 2500
-#define HOW_MUCH_WATER 30000
 
 mode_t mode = modeReady;
 uint32_t msModeStartTime;
+uint32_t msModeReadingTime = 0; // if non-zero, the time we started the modeReading animation
+uint32_t msPumpTime = 1000;
 
 void setMode(const mode_t _mode)
 {
   mode = _mode;
   msModeStartTime = millis();
+  if (mode == modeReading)
+    msModeReadingTime = msModeStartTime;
   loop();
+}
+
+void setPumpTime(uint32_t pumpTimeInSeconds)
+{
+  msPumpTime = pumpTimeInSeconds * 1000;
 }
 
 void setup() {
@@ -38,8 +44,27 @@ void setup() {
 
 void loop()
 {
+  mode_t modeEffective(mode); // shows the animation from the current mode
+                              // UNLESS we are within one second of starting to
+                              // read, in which case, keep showing the reading spinny
+                              // to simulate the effect of somebody is actually
+                              // thinking very hard about whether or not to turn on
+                              // the water for you even though we basically knew
+                              // the minute your common ass showed up in here
 
-  switch (mode)
+  if (msModeReadingTime)
+  {
+    if (millis() - msModeReadingTime < 360)
+    {
+      modeEffective = modeReading;
+    }
+    else
+    {
+      msModeReadingTime = 0; // reset
+    }
+  }
+
+  switch (modeEffective)
   {
 
   case modeWakeUp:
@@ -95,23 +120,15 @@ void loop()
     fill_solid(leds, NUM_LEDS, CRGB::Black);
     {
       uint32_t elapsedTime = millis() - msModeStartTime;
-      if (elapsedTime < READING_SPEED)
+      int curPos = elapsedTime / 24;
+      CRGB color = CRGB::White;
+      uint8_t tailLength = 6;
+      while (curPos >= 0 && tailLength)
       {
-        int curPos = elapsedTime / (READING_SPEED / (NUM_LEDS * READING_LOOPS));
-        CRGB color = CRGB::White;
-        uint8_t tailLength = 6;
-        while (curPos >= 0 && curPos < NUM_LEDS * READING_LOOPS && tailLength)
-        {
-          leds[curPos % NUM_LEDS] = color;
-          curPos--;
-          tailLength--;
-          color.subtractFromRGB(40);
-        }
-      }
-      else
-      {
-        mode = modeFail;
-        msModeStartTime = millis();
+        leds[curPos % NUM_LEDS] = color;
+        curPos--;
+        tailLength--;
+        color.subtractFromRGB(40);
       }
     }
     break;
@@ -123,8 +140,7 @@ void loop()
     uint32_t elapsedTime = millis() - msModeStartTime;
     if (elapsedTime > FAIL_DISPLAY_TIME)
     {
-      mode = modeSuccess;
-      msModeStartTime = millis();
+      setMode(modeReady);
     }
   }
   break;
@@ -135,9 +151,9 @@ void loop()
     leds[2] = leds[3] = leds[4] = CRGB::Orange;
     leds[5] = leds[6] = leds[7] = leds[8] = leds[9] = leds[10] = leds[11] = CRGB::Green;
     uint32_t elapsedTime = millis() - msModeStartTime;
-    if (elapsedTime < HOW_MUCH_WATER)
+    if (elapsedTime < msPumpTime)
     {
-      int curPos = NUM_LEDS - elapsedTime / (HOW_MUCH_WATER / NUM_LEDS);
+      int curPos = NUM_LEDS - elapsedTime / (msPumpTime / NUM_LEDS);
       for (int i = curPos; i < NUM_LEDS; i++)
       {
         leds[i] = CRGB::Black;

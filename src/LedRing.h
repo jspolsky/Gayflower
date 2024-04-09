@@ -14,14 +14,15 @@ namespace LedRing {
     modeTryServer,        // trying to connect to the server. 3 greens, 1 yellow
     modeServerFailed,     // failed to connect to the server. 3 greens, 1 red
 
-    modeReady,
-    modeReading,
-    modeFail,
-    modeSuccess,
+    modeReady,            // blue throbbing "go for it"
+    modeReading,          // white spinny "we read your card"
+    modeFail,             // red X "loser"
+    modeSuccess,          // countdown to running out of water!
 
   } mode_t;
 
   void setMode(mode_t modeNew);
+  void setPumpTime(uint32_t pumpTimeInSeconds);
   void setup();
   void loop();
 };

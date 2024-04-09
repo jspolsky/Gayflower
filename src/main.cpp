@@ -33,15 +33,22 @@ void loop(void)
   {
 
   case Network::resultPump:
+    LedRing::setPumpTime(iPumpTimeInSeconds);
+    LedRing::setMode(LedRing::modeSuccess);
+    RelayOut::runFor(iPumpTimeInSeconds);
     Serial.printf("GOTTA PUMP %d\n", iPumpTimeInSeconds);
     break;
 
   case Network::resultAuthorized:
+    // note the user will receive positive feedback when
+    // the PUMP command comes back and everyone
+    // shows a countdown
     Serial.printf("AUTH %d\n", iPumpTimeInSeconds);
     break;
 
   case Network::resultUnauthorized:
     Serial.println("NO AUTH");
+    LedRing::setMode(LedRing::modeFail);
     break;
 
   case Network::resultNoop:
@@ -54,4 +61,6 @@ void loop(void)
     Serial.println("Successful read");
     Network::swipe(uid, uidLength);
   }
+
+  RelayOut::loop();
 }
