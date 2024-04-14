@@ -54,7 +54,7 @@ namespace Network
 
             LedRing::setMode(LedRing::modeTryServer);
 
-            if (client.connect(IPAddress(192, 168, 126, 107), 3001))
+            if (client.connect(IPAddress(192, 168, 66, 1), 3001))
             {
                 Serial.println("Connected to server");
                 fServerConnected = true;
