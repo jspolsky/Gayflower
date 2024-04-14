@@ -1,0 +1,63 @@
+#!/bin/bash
+
+cmd=`basename $0`
+echo going $cmd
+
+#
+# Netplan YAML configuration for when the network adapter
+# is plugged into a real online network with DHCP. This is
+# for updating Ubuntu, installing packages, etc.
+#
+read -r -d '' yamlOnline<<'EOF'
+network:
+  version: 2
+  renderer: NetworkManager
+  ethernets:
+    eno1:
+      dhcp4: true
+      dhcp6: true
+  wifis: {}
+EOF
+
+#
+# Netplan YAML configuration for when the network adapter
+# is disconnected from the Internet. We have to provide our
+# own Static IP address and run DHCP for any clients
+# that would like to connect.
+#
+read -r -d '' yamlOffline<<'EOF'
+network:
+  version: 2
+  renderer: NetworkManager
+  ethernets:
+    eno1:
+      dhcp4: no
+      dhcp6: no
+      addresses: [192.168.66.1/24]
+  wifis: {}
+EOF
+
+if [ "$cmd" == "online" ]; then
+
+	# Code to go online
+	#
+	# Switch to getting IP address from DHCP
+	systemctl disable dnsmasq
+  systemctl stop dnsmasq
+  echo "$yamlOnline" > /etc/netplan/00-installer-config.yaml
+	netplan generate
+	netplan apply
+  
+else
+
+	# Code to go offline
+	#
+	# Switch to static IP address
+	echo "$yamlOffline" > /etc/netplan/00-installer-config.yaml
+	netplan generate
+	netplan apply
+  systemctl enable dnsmasq
+  systemctl start dnsmasq
+
+fi
+

@@ -1,0 +1,27 @@
+Server name "gayflower", but you'll have to connect using the IP address 192.168.66.1 because there is no DNS while offline.
+
+User "spolsky"
+password is printed on the server
+
+sudo touch /etc/cloud/cloud-init.disabled
+sudo systemctl disable systemd-networkd-wait-online.service
+sudo systemctl mask  systemd-networkd-wait-online.service
+
+Running pm2 to keep node running and serving index.js across reboots
+index.js located in /home/spolsky
+
+  $ sudo pm2 list
+  -- to see it running
+
+Installed dnsmasq to do DHCP (apt install dnsmasq)
+
+
+The server can switch between "offline" and "online" mode
+offline - no internet, normal daily use
+    DHCP server runs to give out IP addresses to clients
+    static IP 192.168.66.1
+online - gets the server on the internet, ethernet hard link, for updates etc
+    does not run its own DHCP server, expects to get everything from a physically connected router
+
+offline/online shell scripts are the same file, linked to each other with ln 
+so sudo ./offline goes offline, sudo ./online goes online
