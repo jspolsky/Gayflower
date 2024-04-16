@@ -14,42 +14,42 @@ namespace Network
             mac[by] = (HW_OCOTP_MAC1 >> ((1 - by) * 8)) & 0xFF;
         for (uint8_t by = 0; by < 4; by++)
             mac[by + 2] = (HW_OCOTP_MAC0 >> ((3 - by) * 8)) & 0xFF;
-        Serial.printf("MAC: %02x:%02x:%02x:%02x:%02x:%02x\n", mac[0], mac[1], mac[2], mac[3], mac[4], mac[5]);
+        Serial.printf("MAC: %02x:%02x:%02x:%02x:%02x:%02x\r\n", mac[0], mac[1], mac[2], mac[3], mac[4], mac[5]);
     }
 
     void setup()
     {
         LedRing::setMode(LedRing::modeTryDHCP);
-        bool fIPConnected = false;
+        bool fIPConnected(false);
+        bool fServerConnected(false);
 
-        while (!fIPConnected)
+        while (!fIPConnected || !fServerConnected)
         {
-            byte mac[6];
-            teensyMAC(mac);
 
-            if (Ethernet.begin(mac, 30000UL, 4000UL) == 0)
+            while (!fIPConnected)
             {
-                LedRing::setMode(LedRing::modeDHCPFailed);
-                Serial.println("Unable to get an IP address from a DHCP server.");
+                byte mac[6];
+                teensyMAC(mac);
 
-                if (Ethernet.linkStatus() == LinkOFF)
+                if (Ethernet.begin(mac, 30000UL, 4000UL) == 0)
                 {
-                    Serial.println("Link status OFF");
+                    LedRing::setMode(LedRing::modeDHCPFailed);
+                    Serial.println("Unable to get an IP address from a DHCP server.");
+
+                    if (Ethernet.linkStatus() == LinkOFF)
+                    {
+                        Serial.println("Link status OFF");
+                    }
+                }
+                else
+                {
+                    LedRing::setMode(LedRing::modeDHCPSuccess);
+                    fIPConnected = true;
+                    Serial.print("My IP address: ");
+                    Serial.println(Ethernet.localIP());
                 }
             }
-            else
-            {
-                LedRing::setMode(LedRing::modeDHCPSuccess);
-                fIPConnected = true;
-                Serial.print("My IP address: ");
-                Serial.println(Ethernet.localIP());
-            }
-        }
 
-        bool fServerConnected = false;
-
-        while (!fServerConnected)
-        {
             // UNDONE sample code sometimes has a delay(1000) here
 
             LedRing::setMode(LedRing::modeTryServer);
@@ -63,7 +63,8 @@ namespace Network
             else
             {
                 Serial.println("Not connected to server");
-                fServerConnected = false;
+                Ethernet.maintain(); // renew DHCP?
+                fIPConnected = fServerConnected = false;
                 LedRing::setMode(LedRing::modeServerFailed);
                 delay(1000);
             }
@@ -89,7 +90,7 @@ namespace Network
                 *pchNext = '\0';
                 if (cb > 0)
                 {
-                    Serial.printf("Message from server [%s]\n", msg);
+                    Serial.printf("Message from server [%s]\r\n", msg);
                     if (!strncmp(msg, "401 ", 4))
                     {
                         result = resultUnauthorized;
