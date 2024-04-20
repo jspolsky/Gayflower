@@ -1,15 +1,38 @@
 {
   "version": "5",
   "dialect": "sqlite",
-  "id": "6de52a89-7132-46bd-a874-83dcbbed0572",
+  "id": "7738d035-2ffe-44a2-96da-a9f9910b8352",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "tables": {
+    "configs": {
+      "name": "configs",
+      "columns": {
+        "key": {
+          "name": "key",
+          "type": "text",
+          "primaryKey": true,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "value": {
+          "name": "value",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {}
+    },
     "turtles": {
       "name": "turtles",
       "columns": {
         "id": {
           "name": "id",
-          "type": "integer",
+          "type": "text",
           "primaryKey": true,
           "notNull": true,
           "autoincrement": false
