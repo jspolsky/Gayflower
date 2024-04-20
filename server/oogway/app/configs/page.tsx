@@ -1,8 +1,8 @@
 import Search from "@/components/search";
-import { CreateTurtle } from "@/components/turtles/buttons";
+import { CreateConfig } from "@/components/configs/buttons";
 import Pagination from "@/components/pagination";
-import Table from "@/components/turtles/table";
-import { fetchTurtlesPages } from "@/lib/turtles/data";
+import Table from "@/components/configs/table";
+import { fetchConfigsPages } from "@/lib/configs/data";
 
 export default async function Page({
   searchParams,
@@ -14,16 +14,16 @@ export default async function Page({
 }) {
   const query = searchParams?.query || "";
   const currentPage = Number(searchParams?.page) || 1;
-  const totalPages = await fetchTurtlesPages(query);
+  const totalPages = await fetchConfigsPages(query);
 
   return (
     <div className="w-full">
       <div className="flex w-full items-center justify-between">
-        <h1 className={`text-2xl`}>Turtles</h1>
+        <h1 className={`text-2xl`}>Configurations</h1>
       </div>
       <div className="mt-4 flex items-center justify-between gap-2 md:mt-8">
-        <Search placeholder="Search turtles..." />
-        <CreateTurtle />
+        <Search placeholder="Search Configs..." />
+        <CreateConfig />
       </div>
       <Table query={query} currentPage={currentPage} />
       <div className="mt-5 flex w-full justify-center">

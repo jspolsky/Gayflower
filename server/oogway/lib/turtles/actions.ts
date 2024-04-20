@@ -3,8 +3,8 @@ import { z } from "zod";
 import { revalidatePath } from "next/cache";
 
 import { redirect } from "next/navigation";
-import { db } from "./db";
-import * as schema from "./schema";
+import { db } from "../db";
+import * as schema from "../schema";
 import { eq } from "drizzle-orm";
 
 const TurtleSchema = z.object({
@@ -15,7 +15,6 @@ const TurtleSchema = z.object({
 const UpdateTurtleSchema = TurtleSchema.omit({ id: true });
 
 export async function createTurtle(formData: FormData) {
-  console.log("create got", formData);
   const { id, name } = TurtleSchema.parse({
     id: formData.get("turtleId"),
     name: formData.get("turtleName"),

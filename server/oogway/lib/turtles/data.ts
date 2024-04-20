@@ -1,7 +1,7 @@
 import { like, sql, or, eq } from "drizzle-orm";
 import { unstable_noStore as noStore } from "next/cache";
-import { db } from "./db";
-import * as schema from "./schema";
+import { db } from "../db";
+import * as schema from "../schema";
 
 export async function fetchTurtles() {
   noStore();
@@ -12,18 +12,6 @@ export async function fetchTurtles() {
   } catch (error) {
     console.error("Database error:", error);
     throw new Error("Failed to fetch Turtles.");
-  }
-}
-export async function fetchConfigs() {
-  noStore();
-
-  try {
-    const result = db.select().from(schema.configs);
-
-    return result;
-  } catch (error) {
-    console.error("Database error:", error);
-    throw new Error("Failed to fetch Configs.");
   }
 }
 

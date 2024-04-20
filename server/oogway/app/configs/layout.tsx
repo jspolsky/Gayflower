@@ -1,4 +1,4 @@
-export default function TurtlesLayout({
+export default function ConfigsLayout({
   children,
 }: {
   children: React.ReactNode;

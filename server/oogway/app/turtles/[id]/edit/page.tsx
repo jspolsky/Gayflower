@@ -1,6 +1,6 @@
-import Breadcrumbs from "@/components/turtles/breadcrumbs";
+import Breadcrumbs from "@/components/breadcrumbs";
 import Form from "@/components/turtles/edit-form";
-import { fetchTurtleById } from "@/lib/data";
+import { fetchTurtleById } from "@/lib/turtles/data";
 
 export default async function Page({ params }: { params: { id: string } }) {
   const id = params.id;

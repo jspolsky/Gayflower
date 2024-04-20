@@ -4,6 +4,9 @@
 
 # to run development server
 bun --bun dev
+
+# to run production server
+bun --bun start
 ```
 
 ## DB Management

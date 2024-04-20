@@ -13,7 +13,7 @@ const links = [
     href: "/turtles",
     icon: UserCircleIcon,
   },
-  { name: "Configurations", href: "/configurations", icon: CogIcon },
+  { name: "Configurations", href: "/configs", icon: CogIcon },
 ];
 
 export default function NavLinks() {
