@@ -1,7 +1,5 @@
 import { Socket } from "net";
-import { db } from "./lib/db";
-import * as schema from "./lib/schema";
-import { eq } from "drizzle-orm";
+
 import {
   PUMP_TIME_IN_SECONDS_CONFIG,
   getConfigValueOrDefault,
