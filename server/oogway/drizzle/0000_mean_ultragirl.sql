@@ -1,9 +1,9 @@
 CREATE TABLE `configs` (
 	`key` text PRIMARY KEY NOT NULL,
-	`value` text
+	`value` text NOT NULL
 );
 --> statement-breakpoint
 CREATE TABLE `turtles` (
 	`id` text PRIMARY KEY NOT NULL,
-	`name` text
+	`name` text NOT NULL
 );

@@ -11,9 +11,11 @@ bun --bun dev
 ### Updating Schema
 
 - generate schema changes by running `bunx drizzle-kit generate:sqlite --schema lib/schema.ts`
-- migrate the schema changes by runnning `bun run lib/migrate.ts`
+- migrate the schema changes by runnning `bun run scripts/migrate.ts`
 
 ### Seeding the DB
 
-- update `lib/seed.ts`
-- run `bun run lib/seed.ts`
+- update `scripts/seed.ts`
+- run `bun run scripts/seed.ts`
+
+If you're making breaking changes, you'll have to either figure it out manually or start from scratch (delete `./drizzle` and `mydb.sqlite` and then rerun the commands above)
