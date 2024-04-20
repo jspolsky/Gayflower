@@ -58,15 +58,17 @@ function dataHandlerFor(connection: Socket) {
         connection.write("100 INFO why hello to you too!\r\n");
       } else if (requestArray[0] === "SWIP" && requestArray.length > 1) {
         if (okToPump(requestArray[1])) {
-          connection.write(`200 OK ${getPumpTimeInSeconds()}\r\n`);
+          getPumpTimeInSeconds().then((pumpTimeValue) => {
+            connection.write(`200 OK ${pumpTimeValue}\r\n`);
 
-          // tell ALL the connected clients that they can turn on the water
-          // one of them has got to be connected to a pump!
-          var i = 0;
-          while (i < connectedclients.length) {
-            connectedclients[i].write(`PUMP ${getPumpTimeInSeconds()}\r\n`);
-            i++;
-          }
+            // tell ALL the connected clients that they can turn on the water
+            // one of them has got to be connected to a pump!
+            var i = 0;
+            while (i < connectedclients.length) {
+              connectedclients[i].write(`PUMP ${pumpTimeValue}\r\n`);
+              i++;
+            }
+          });
         } else {
           connection.write("401 Unauthorized\r\n");
         }
