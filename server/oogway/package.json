@@ -3,10 +3,15 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "bun server.ts",
+    "dev": "concurrently -c 'blue,magenta' --prefix '{name}' bun:next-dev bun:tcp-dev",
     "build": "next build",
-    "start": "NODE_ENV=production bun --bun run server.ts",
-    "lint": "next lint"
+    "prestart": "bun run build",
+    "start": "concurrently -c 'blue,magenta' --prefix '{name}' bun:next-start bun:tcp-start",
+    "lint": "next lint",
+    "next-dev": "next dev",
+    "next-start": "next start",
+    "tcp-dev": "bun run tcp-server.ts",
+    "tcp-start": "NODE_ENV=production bun run tcp-server.ts"
   },
   "dependencies": {
     "@headlessui/react": "^1.7.18",
@@ -27,6 +32,7 @@
     "@types/node": "^20",
     "@types/react": "^18",
     "@types/react-dom": "^18",
+    "concurrently": "^8.2.2",
     "drizzle-kit": "^0.20.16",
     "eslint": "^8",
     "eslint-config-next": "14.2.1",

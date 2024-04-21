@@ -20,7 +20,7 @@ const okToPump = (swipe: string) => {
   return toggle;
 };
 
-export function tcpHandler(connection: Socket) {
+export function handler(connection: Socket) {
   console.log(`client connected remote port ${connection.remotePort}`);
   connectedclients.push(connection);
 

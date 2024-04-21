@@ -6,6 +6,7 @@ import { redirect } from "next/navigation";
 import { db } from "../db";
 import * as schema from "../schema";
 import { eq } from "drizzle-orm";
+import { error } from "console";
 
 const TurtleSchema = z.object({
   id: z.string(),
