@@ -3,15 +3,18 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "concurrently -c 'blue,magenta' --prefix '{name}' bun:next-dev bun:tcp-dev",
+    "dev": "concurrently -c 'blue,magenta' --prefix '{time} {name}    ' bun:next-dev bun:tcp-dev",
     "build": "next build",
     "prestart": "bun run build",
-    "start": "concurrently -c 'blue,magenta' --prefix '{name}' bun:next-start bun:tcp-start",
-    "lint": "next lint",
+    "start": "concurrently -c 'blue,magenta' --prefix '{time} {name}    ' bun:next-start bun:tcp-start",
+    "lint": "bunx --bun eslint .",
     "next-dev": "next dev",
     "next-start": "next start",
     "tcp-dev": "bun run tcp-server.ts",
-    "tcp-start": "NODE_ENV=production bun run tcp-server.ts"
+    "tcp-start": "NODE_ENV=production bun run tcp-server.ts",
+    "migrate-db": "bun run scripts/migrate.ts",
+    "seed-db": "bun run scripts/seed.ts",
+    "clean-db": "rm -Irf ./drizzle mydb.sqlite"
   },
   "dependencies": {
     "@headlessui/react": "^1.7.18",
@@ -20,15 +23,21 @@
     "@tailwindcss/forms": "^0.5.7",
     "@tailwindcss/typography": "^0.5.12",
     "@types/bun": "^1.1.0",
+    "@typescript-eslint/eslint-plugin": "^7.7.1",
+    "@typescript-eslint/parser": "^7.7.1",
+    "ag-grid-react": "^31.2.1",
     "classnames": "^2.5.1",
     "clsx": "^2.1.0",
     "drizzle-orm": "^0.30.8",
+    "drizzle-zod": "^0.5.1",
+    "eslint-plugin-drizzle": "^0.2.3",
     "next": "14.2.1",
     "react": "^18",
     "react-dom": "^18",
     "use-debounce": "^10.0.0"
   },
   "devDependencies": {
+    "@eslint/js": "^9.1.1",
     "@types/node": "^20",
     "@types/react": "^18",
     "@types/react-dom": "^18",
@@ -38,7 +47,8 @@
     "eslint-config-next": "14.2.1",
     "postcss": "^8",
     "tailwindcss": "^3.4.1",
-    "typescript": "^5"
+    "typescript": "^5.4.5",
+    "typescript-eslint": "^7.7.1"
   },
   "trustedDependencies": [
     "es5-ext"

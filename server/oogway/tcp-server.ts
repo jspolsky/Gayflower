@@ -3,7 +3,7 @@ import * as net from "net";
 import { handler } from "./tcp-handler";
 
 const hostname = "localhost";
-const tcpPort = 4000;
+const tcpPort = 3001;
 
 const tcpServer = net.createServer(handler);
 

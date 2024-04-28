@@ -1,5 +1,12 @@
 "use client";
-import { CogIcon, HomeIcon, UserCircleIcon } from "@heroicons/react/24/outline";
+import {
+  CogIcon,
+  CreditCardIcon,
+  DocumentTextIcon,
+  HomeIcon,
+  UserCircleIcon,
+  WifiIcon,
+} from "@heroicons/react/24/outline";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import clsx from "clsx";
@@ -14,6 +21,9 @@ const links = [
     icon: UserCircleIcon,
   },
   { name: "Configurations", href: "/configs", icon: CogIcon },
+  { name: "Clients", href: "/clients", icon: WifiIcon },
+  { name: "Swipes", href: "/swipes", icon: CreditCardIcon },
+  { name: "Logs", href: "/logs", icon: DocumentTextIcon },
 ];
 
 export default function NavLinks() {

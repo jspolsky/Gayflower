@@ -1,5 +1,6 @@
 import { UpdateTurtle, DeleteTurtle } from "@/components/turtles/buttons";
-import { fetchFilteredTurtles } from "@/lib/turtles/data";
+import { fetchFilteredTurtles } from "@/lib/data/turtle";
+import { unstable_noStore as noStore } from "next/cache";
 
 export default async function TurtlesTable({
   query,
@@ -8,6 +9,7 @@ export default async function TurtlesTable({
   query: string;
   currentPage: number;
 }) {
+  noStore();
   const turtles = await fetchFilteredTurtles(query, currentPage);
 
   return (

@@ -4,7 +4,7 @@ import { revalidatePath } from "next/cache";
 
 import { redirect } from "next/navigation";
 import { db } from "../db";
-import * as schema from "../schema";
+import * as schema from "../schema/config";
 import { eq } from "drizzle-orm";
 
 const ConfigurationSchema = z.object({
@@ -20,7 +20,7 @@ export async function createConfig(formData: FormData) {
     value: formData.get("configValue"),
   });
 
-  await db.insert(schema.configs).values([{ key, value }]);
+  await db.insert(schema.config).values([{ key, value }]);
 
   revalidatePath("/configs");
   redirect("/configs");
@@ -32,16 +32,16 @@ export async function updateConfig(key: string, formData: FormData) {
   });
 
   await db
-    .update(schema.configs)
+    .update(schema.config)
     .set({ value: value })
-    .where(eq(schema.configs.key, key))
-    .returning({ newValue: schema.configs.value });
+    .where(eq(schema.config.key, key))
+    .returning({ newValue: schema.config.value });
 
   revalidatePath("/configs");
   redirect("/configs");
 }
 
 export async function deleteConfig(key: string) {
-  await db.delete(schema.configs).where(eq(schema.configs.key, key));
+  await db.delete(schema.config).where(eq(schema.config.key, key));
   revalidatePath("/configs");
 }

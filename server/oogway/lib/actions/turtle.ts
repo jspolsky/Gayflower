@@ -4,9 +4,8 @@ import { revalidatePath } from "next/cache";
 
 import { redirect } from "next/navigation";
 import { db } from "../db";
-import * as schema from "../schema";
+import * as schema from "../schema/turtle";
 import { eq } from "drizzle-orm";
-import { error } from "console";
 
 const TurtleSchema = z.object({
   id: z.string(),
@@ -21,7 +20,7 @@ export async function createTurtle(formData: FormData) {
     name: formData.get("turtleName"),
   });
 
-  await db.insert(schema.turtles).values([{ id, name }]);
+  await db.insert(schema.turtle).values([{ id, name }]);
 
   revalidatePath("/turtles");
   redirect("/turtles");
@@ -33,16 +32,16 @@ export async function updateTurtle(id: string, formData: FormData) {
   });
 
   await db
-    .update(schema.turtles)
+    .update(schema.turtle)
     .set({ name: name })
-    .where(eq(schema.turtles.id, id))
-    .returning({ newName: schema.turtles.name });
+    .where(eq(schema.turtle.id, id))
+    .returning({ newName: schema.turtle.name });
 
   revalidatePath("/turtles");
   redirect("/turtles");
 }
 
 export async function deleteTurtle(id: string) {
-  await db.delete(schema.turtles).where(eq(schema.turtles.id, id));
+  await db.delete(schema.turtle).where(eq(schema.turtle.id, id));
   revalidatePath("/turtles");
 }

@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { createTurtle } from "@/lib/turtles/actions";
+import { createTurtle } from "@/lib/actions/turtle";
 import { Button } from "../button";
 
 export default function CreateTurtleForm() {

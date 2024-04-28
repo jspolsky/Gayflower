@@ -1,11 +1,15 @@
 "use client";
 
-import * as schema from "@/lib/schema";
+import * as schema from "@/lib/schema/config";
 import Link from "next/link";
-import { updateConfig } from "@/lib/configs/actions";
+import { updateConfig } from "@/lib/actions/config";
 import { Button } from "../button";
 
-export default function EditConfigForm({ config }: { config: schema.Config }) {
+export default function EditConfigForm({
+  config,
+}: {
+  config: schema.NewConfig;
+}) {
   const updateConfigWithId = updateConfig.bind(null, config.key);
   return (
     <form action={updateConfigWithId}>

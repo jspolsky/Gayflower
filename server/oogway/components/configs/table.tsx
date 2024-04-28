@@ -1,4 +1,5 @@
-import { fetchFilteredConfigs } from "@/lib/configs/data";
+import { fetchFilteredConfigs } from "@/lib/data/config";
+import { unstable_noStore as noStore } from "next/cache";
 
 import { DeleteConfig, UpdateConfig } from "./buttons";
 
@@ -9,6 +10,7 @@ export default async function ConfigTable({
   query: string;
   currentPage: number;
 }) {
+  noStore();
   const configs = await fetchFilteredConfigs(query, currentPage);
 
   return (

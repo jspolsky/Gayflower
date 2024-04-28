@@ -1,8 +1,10 @@
 import Breadcrumbs from "@/components/breadcrumbs";
 import Form from "@/components/turtles/edit-form";
-import { fetchTurtleById } from "@/lib/turtles/data";
+import { fetchTurtleById } from "@/lib/data/turtle";
+import { unstable_noStore as noStore } from "next/cache";
 
 export default async function Page({ params }: { params: { id: string } }) {
+  noStore();
   const id = params.id;
   const turtle = await fetchTurtleById(id);
 

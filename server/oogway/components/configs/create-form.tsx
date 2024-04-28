@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { createConfig } from "@/lib/configs/actions";
+import { createConfig } from "@/lib/actions/config";
 import { Button } from "../button";
 
 export default function CreateConfigForm() {

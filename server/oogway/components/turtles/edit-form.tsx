@@ -1,11 +1,15 @@
 "use client";
 
-import * as schema from "@/lib/schema";
+import * as schema from "@/lib/schema/turtle";
 import Link from "next/link";
-import { updateTurtle } from "@/lib/turtles/actions";
+import { updateTurtle } from "@/lib/actions/turtle";
 import { Button } from "../button";
 
-export default function EditTurtleForm({ turtle }: { turtle: schema.Turtle }) {
+export default function EditTurtleForm({
+  turtle,
+}: {
+  turtle: schema.NewTurtle;
+}) {
   const updateTurtleWithId = updateTurtle.bind(null, turtle.id);
   return (
     <form action={updateTurtleWithId}>

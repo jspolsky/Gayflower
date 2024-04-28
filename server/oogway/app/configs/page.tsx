@@ -2,7 +2,8 @@ import Search from "@/components/search";
 import { CreateConfig } from "@/components/configs/buttons";
 import Pagination from "@/components/pagination";
 import Table from "@/components/configs/table";
-import { fetchConfigsPages } from "@/lib/configs/data";
+import { fetchConfigsPages } from "@/lib/data/config";
+import { unstable_noStore as noStore } from "next/cache";
 
 export default async function Page({
   searchParams,
@@ -12,6 +13,7 @@ export default async function Page({
     page?: string;
   };
 }) {
+  noStore();
   const query = searchParams?.query || "";
   const currentPage = Number(searchParams?.page) || 1;
   const totalPages = await fetchConfigsPages(query);

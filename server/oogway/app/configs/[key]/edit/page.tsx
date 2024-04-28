@@ -1,8 +1,11 @@
 import Breadcrumbs from "@/components/breadcrumbs";
 import Form from "@/components/configs/edit-form";
-import { fetchConfigByKey } from "@/lib/configs/data";
+import { fetchConfigByKey } from "@/lib/data/config";
+import { unstable_noStore as noStore } from "next/cache";
 
 export default async function Page({ params }: { params: { key: string } }) {
+  noStore();
+
   const key = params.key;
   const config = await fetchConfigByKey(key);
 

@@ -1,27 +1,37 @@
 import { Socket } from "net";
 
-import {
-  PUMP_TIME_IN_SECONDS_CONFIG,
-  getConfigValueOrDefault,
-} from "./lib/configs/constants";
+import { getConfigValueOrDefault } from "./lib/data/config";
+import { recordClientConnected } from "./lib/data/client";
+import { PUMP_TIME_IN_SECONDS_CONFIG } from "./lib/schema/config";
+import { fetchTurtleById } from "./lib/data/turtle";
+import { recordConnectionLog } from "./lib/data/connection-log";
+import { recordSwipeLog } from "./lib/data/swipe-log";
 
-var connectedclients: Socket[] = [];
+const connectedclients: Socket[] = [];
 
-const getPumpTimeInSeconds = async () => {
-  return await getConfigValueOrDefault(PUMP_TIME_IN_SECONDS_CONFIG);
-};
+const handleSwipeRequest = async (connection: Socket, swipeId: string) => {
+  const turtle = await fetchTurtleById(swipeId);
+  const pumpTimeValue = await getConfigValueOrDefault(
+    PUMP_TIME_IN_SECONDS_CONFIG
+  );
 
-var toggle = false;
-const okToPump = (swipe: string) => {
-  // UNDONE - look up if the swipe code is valid and entitled to a pump
-  // UNDONE - for debugging now it just alternates between true and false
-
-  toggle = !toggle;
-  return toggle;
+  // record swipe
+  if (turtle.enabled) {
+    recordSwipeLog(connection, swipeId, true, "turtle has permission");
+    connection.write(`200 OK ${pumpTimeValue}\r\n`);
+    // tell ALL the connected clients that they can turn on the water
+    // one of them has got to be connected to a pump!
+    connectedclients.forEach((c) => c.write(`PUMP ${pumpTimeValue}\r\n`));
+  } else {
+    throw new Error(`Turtle does not have permission`);
+  }
 };
 
 export function handler(connection: Socket) {
   console.log(`client connected remote port ${connection.remotePort}`);
+
+  recordClientConnected(connection);
+
   connectedclients.push(connection);
 
   connection.on("error", errorHandlerFor(connection));
@@ -35,8 +45,7 @@ export function handler(connection: Socket) {
 
 function errorHandlerFor(connection: Socket) {
   return (err: Error) => {
-    console.log("caught exception:");
-    console.log(err.stack);
+    recordConnectionLog(connection, "error", err.message);
     if (err.message === "read ECONNRESET") {
       const ix = connectedclients.indexOf(connection);
       if (ix >= 0) connectedclients.splice(ix, 1);
@@ -46,7 +55,7 @@ function errorHandlerFor(connection: Socket) {
 
 function dataHandlerFor(connection: Socket) {
   return (data: Buffer) => {
-    console.log(data.toString());
+    recordConnectionLog(connection, "data", data.toString());
     const requestArray = data
       .toString()
       .replace(/\r?\n|\r/g, "")
@@ -55,21 +64,15 @@ function dataHandlerFor(connection: Socket) {
       if (requestArray[0] === "HELO") {
         connection.write("100 INFO why hello to you too!\r\n");
       } else if (requestArray[0] === "SWIP" && requestArray.length > 1) {
-        if (okToPump(requestArray[1])) {
-          getPumpTimeInSeconds().then((pumpTimeValue) => {
-            connection.write(`200 OK ${pumpTimeValue}\r\n`);
-
-            // tell ALL the connected clients that they can turn on the water
-            // one of them has got to be connected to a pump!
-            var i = 0;
-            while (i < connectedclients.length) {
-              connectedclients[i].write(`PUMP ${pumpTimeValue}\r\n`);
-              i++;
-            }
-          });
-        } else {
+        const swipeId = requestArray[1];
+        handleSwipeRequest(connection, swipeId).catch((error) => {
+          recordSwipeLog(connection, swipeId, false, error.message);
+          console.error(
+            `Error handling swip request for ${swipeId} on ${connection.address()}`,
+            error
+          );
           connection.write("401 Unauthorized\r\n");
-        }
+        });
       } else {
         connection.write(`400 Message not understood. Try SWIP\r\n`);
       }
@@ -79,7 +82,7 @@ function dataHandlerFor(connection: Socket) {
 
 function endHandlerFor(connection: Socket) {
   return () => {
-    console.log("client disconnected");
+    recordConnectionLog(connection, "end", "client disconnected");
     const ix = connectedclients.indexOf(connection);
     if (ix >= 0) connectedclients.splice(ix, 1);
   };

@@ -2,7 +2,8 @@ import Search from "@/components/search";
 import { CreateTurtle } from "@/components/turtles/buttons";
 import Pagination from "@/components/pagination";
 import Table from "@/components/turtles/table";
-import { fetchTurtlesPages } from "@/lib/turtles/data";
+import { fetchTurtlesPages } from "@/lib/data/turtle";
+import { unstable_noStore as noStore } from "next/cache";
 
 export default async function Page({
   searchParams,
@@ -12,6 +13,7 @@ export default async function Page({
     page?: string;
   };
 }) {
+  noStore();
   const query = searchParams?.query || "";
   const currentPage = Number(searchParams?.page) || 1;
   const totalPages = await fetchTurtlesPages(query);

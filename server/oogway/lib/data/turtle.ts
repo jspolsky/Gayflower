@@ -1,12 +1,10 @@
 import { like, sql, or, eq } from "drizzle-orm";
-import { unstable_noStore as noStore } from "next/cache";
 import { db } from "../db";
-import * as schema from "../schema";
+import * as schema from "../schema/turtle";
 
 export async function fetchTurtles() {
-  noStore();
   try {
-    const result = db.select().from(schema.turtles);
+    const result = db.select().from(schema.turtle);
 
     return result;
   } catch (error) {
@@ -15,38 +13,35 @@ export async function fetchTurtles() {
   }
 }
 
-export async function fetchTurtleById(id: string) {
-  noStore();
+export async function fetchTurtleById(id: string): Promise<schema.Turtle> {
   try {
     const result = await db
       .select()
-      .from(schema.turtles)
-      .where(eq(schema.turtles.id, id));
+      .from(schema.turtle)
+      .where(eq(schema.turtle.id, id));
 
-    const turtle = result[0];
-
-    return turtle;
+    if (result[0]) return result[0];
+    else throw new Error(`Turtle with id ${id} doesn't exist`);
   } catch (error) {
     console.error("Database error:", error);
     throw new Error("Failed to fetch Turtle by ID.");
   }
 }
 
-const ITEMS_PER_PAGE = 6;
+const ITEMS_PER_PAGE = 100;
 export async function fetchFilteredTurtles(query: string, currentPage: number) {
-  noStore();
   try {
     const currentOffset = (currentPage - 1) * ITEMS_PER_PAGE;
     const result = db
       .select()
-      .from(schema.turtles)
+      .from(schema.turtle)
       .where(
         or(
-          like(schema.turtles.id, `%${query}%`),
-          like(schema.turtles.name, `%${query}%`)
+          like(schema.turtle.id, `%${query}%`),
+          like(schema.turtle.name, `%${query}%`)
         )
       )
-      .orderBy(schema.turtles.id)
+      .orderBy(schema.turtle.id)
       .limit(ITEMS_PER_PAGE)
       .offset(currentOffset);
 
@@ -58,15 +53,14 @@ export async function fetchFilteredTurtles(query: string, currentPage: number) {
 }
 
 export async function fetchTurtlesPages(query: string) {
-  noStore();
   try {
     const result = await db
-      .select({ count: sql<number>`cast(count(${schema.turtles.id}) as int)` })
-      .from(schema.turtles)
+      .select({ count: sql<number>`cast(count(${schema.turtle.id}) as int)` })
+      .from(schema.turtle)
       .where(
         or(
-          like(schema.turtles.id, `%${query}%`),
-          like(schema.turtles.name, `%${query}%`)
+          like(schema.turtle.id, `%${query}%`),
+          like(schema.turtle.name, `%${query}%`)
         )
       );
 

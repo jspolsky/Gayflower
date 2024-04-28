@@ -1,12 +1,10 @@
 import { like, sql, or, eq } from "drizzle-orm";
-import { unstable_noStore as noStore } from "next/cache";
 import { db } from "../db";
-import * as schema from "../schema";
+import * as schema from "../schema/config";
 
 export async function fetchConfigs() {
-  noStore();
   try {
-    const result = db.select().from(schema.configs);
+    const result = db.select().from(schema.config);
 
     return result;
   } catch (error) {
@@ -16,37 +14,35 @@ export async function fetchConfigs() {
 }
 
 export async function fetchConfigByKey(key: string) {
-  noStore();
   try {
     const result = await db
       .select()
-      .from(schema.configs)
-      .where(eq(schema.configs.key, key));
+      .from(schema.config)
+      .where(eq(schema.config.key, key));
 
     const config = result[0];
 
     return config;
   } catch (error) {
     console.error("Database error:", error);
-    throw new Error("Failed to fetch Config by key.");
+    throw new Error(`Failed to fetch Config by key='${key}'`);
   }
 }
 
-const ITEMS_PER_PAGE = 6;
+const ITEMS_PER_PAGE = 12;
 export async function fetchFilteredConfigs(query: string, currentPage: number) {
-  noStore();
   try {
     const currentOffset = (currentPage - 1) * ITEMS_PER_PAGE;
     const result = db
       .select()
-      .from(schema.configs)
+      .from(schema.config)
       .where(
         or(
-          like(schema.configs.key, `%${query}%`),
-          like(schema.configs.value, `%${query}%`)
+          like(schema.config.key, `%${query}%`),
+          like(schema.config.value, `%${query}%`)
         )
       )
-      .orderBy(schema.configs.key)
+      .orderBy(schema.config.key)
       .limit(ITEMS_PER_PAGE)
       .offset(currentOffset);
 
@@ -58,15 +54,14 @@ export async function fetchFilteredConfigs(query: string, currentPage: number) {
 }
 
 export async function fetchConfigsPages(query: string) {
-  noStore();
   try {
     const result = await db
-      .select({ count: sql<number>`cast(count(${schema.configs.key}) as int)` })
-      .from(schema.configs)
+      .select({ count: sql<number>`cast(count(${schema.config.key}) as int)` })
+      .from(schema.config)
       .where(
         or(
-          like(schema.configs.key, `%${query}%`),
-          like(schema.configs.value, `%${query}%`)
+          like(schema.config.key, `%${query}%`),
+          like(schema.config.value, `%${query}%`)
         )
       );
 
@@ -76,5 +71,26 @@ export async function fetchConfigsPages(query: string) {
   } catch (error) {
     console.error("Database error:", error);
     throw new Error("Failed to fetch Configs Pages.");
+  }
+}
+
+export async function getConfigValueOrDefault<T>(
+  knownConfig: schema.KnownConfig<T>
+) {
+  try {
+    const result = await db
+      .select()
+      .from(schema.config)
+      .where(eq(schema.config.key, knownConfig.key));
+
+    const value = result[0].value;
+
+    return value as T;
+  } catch (error) {
+    console.error(
+      `Failed to get ${knownConfig.key} and will use default value`,
+      error
+    );
+    return knownConfig.defaultValue;
   }
 }
