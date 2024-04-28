@@ -10,6 +10,7 @@ import { eq } from "drizzle-orm";
 const TurtleSchema = z.object({
   id: z.string(),
   name: z.string(),
+  enabled: z.coerce.boolean(),
 });
 
 const UpdateTurtleSchema = TurtleSchema.omit({ id: true });
@@ -18,6 +19,7 @@ export async function createTurtle(formData: FormData) {
   const { id, name } = TurtleSchema.parse({
     id: formData.get("turtleId"),
     name: formData.get("turtleName"),
+    enabled: formData.get("isEnabled"),
   });
 
   await db.insert(schema.turtle).values([{ id, name }]);
@@ -27,13 +29,14 @@ export async function createTurtle(formData: FormData) {
 }
 
 export async function updateTurtle(id: string, formData: FormData) {
-  const { name } = UpdateTurtleSchema.parse({
+  const { name, enabled } = UpdateTurtleSchema.parse({
     name: formData.get("turtleName"),
+    enabled: formData.get("isEnabled"),
   });
 
   await db
     .update(schema.turtle)
-    .set({ name: name })
+    .set({ name: name, enabled: enabled })
     .where(eq(schema.turtle.id, id))
     .returning({ newName: schema.turtle.name });
 

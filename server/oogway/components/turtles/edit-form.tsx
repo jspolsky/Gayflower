@@ -55,6 +55,23 @@ export default function EditTurtleForm({
           </div>
         </div>
       </div>
+
+      <div className="mb-4">
+        <label htmlFor="isEnabled" className="mb-2 block text-sm font-medium">
+          Enabled?
+        </label>
+        <div className="flex border-gray-200 relative mt-2 rounded-md">
+          <div className="relative">
+            <input
+              id="isEnabled"
+              name="isEnabled"
+              type="checkbox"
+              defaultChecked={turtle.enabled || false}
+              className="peer block w-full rounded-md border border-gray-200 py-2 pl-10 text-sm outline-2 placeholder:text-gray-500"
+            />
+          </div>
+        </div>
+      </div>
       <div className="mt-6 flex justify-end gap-4">
         <Link
           href="/turtles"
