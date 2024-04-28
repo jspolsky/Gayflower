@@ -14,18 +14,13 @@ export async function fetchTurtles() {
 }
 
 export async function fetchTurtleById(id: string): Promise<schema.Turtle> {
-  try {
-    const result = await db
-      .select()
-      .from(schema.turtle)
-      .where(eq(schema.turtle.id, id));
+  const result = await db
+    .select()
+    .from(schema.turtle)
+    .where(eq(schema.turtle.id, id));
 
-    if (result[0]) return result[0];
-    else throw new Error(`Turtle with id ${id} doesn't exist`);
-  } catch (error) {
-    console.error("Database error:", error);
-    throw new Error("Failed to fetch Turtle by ID.");
-  }
+  if (result[0]) return result[0];
+  else throw new Error(`Turtle with id ${id} doesn't exist`);
 }
 
 const ITEMS_PER_PAGE = 100;

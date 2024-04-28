@@ -68,7 +68,7 @@ function dataHandlerFor(connection: Socket) {
         handleSwipeRequest(connection, swipeId).catch((error) => {
           recordSwipeLog(connection, swipeId, false, error.message);
           console.error(
-            `Error handling swip request for ${swipeId} on ${connection.address()}`,
+            `Error handling swip request for ${swipeId} on ${connection.remoteAddress}:${connection.remotePort}`,
             error
           );
           connection.write("401 Unauthorized\r\n");

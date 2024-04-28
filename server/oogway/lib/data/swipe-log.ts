@@ -13,27 +13,22 @@ export async function fetchSwipeLogs() {
   }
 }
 
-export async function recordSwipeLog(
+export function recordSwipeLog(
   connection: Socket,
   swipe_id: string,
   is_allowed: boolean,
   reason: string
 ) {
-  try {
-    const addressInfo = connection.address();
-    if ("address" in addressInfo) {
-      await db.insert(schema.swipe_log).values({
-        address: addressInfo.address,
-        port: String(addressInfo.port),
-        swipe_id,
-        is_allowed,
-        reason,
-      });
-    }
-  } catch (error) {
-    console.error(
-      `Error while recording swipe log from ${connection.address()} - swipId=${swipe_id} isAllowed=${is_allowed} - ${reason}`,
-      error
-    );
-  }
+  console.log(
+    `local='${connection.localAddress}:${connection.localPort}' remote='${connection.remoteAddress}:${connection.remotePort}' swipe_id='${swipe_id}' is_allowed='${is_allowed}' reason='${reason}'`
+  );
+  db.insert(schema.swipe_log)
+    .values({
+      address: connection.remoteAddress || "undefined",
+      port: String(connection.remotePort),
+      swipe_id,
+      is_allowed,
+      reason,
+    })
+    .catch(console.error);
 }

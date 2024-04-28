@@ -16,24 +16,24 @@ export async function fetchClients(): Promise<schema.Client[]> {
 
 export async function recordClientConnected(connection: Socket) {
   try {
-    const addressInfo = connection.address();
-    if ("address" in addressInfo) {
-      await db
-        .insert(schema.client)
-        .values({
-          address: addressInfo.address,
-          port: String(addressInfo.port),
-        })
-        .onConflictDoUpdate({
-          target: [schema.client.address, schema.client.port],
-          set: { last_heartbeat: sql`(CURRENT_TIMESTAMP)` },
-        });
-    }
+    console.log(
+      `local='${connection.localAddress}:${connection.localPort}' remote='${connection.remoteAddress}:${connection.remotePort}' client connected`
+    );
+    await db
+      .insert(schema.client)
+      .values({
+        address: connection.remoteAddress || "undefined",
+        port: String(connection.remotePort),
+      })
+      .onConflictDoUpdate({
+        target: [schema.client.address, schema.client.port],
+        set: { last_heartbeat: sql`(CURRENT_TIMESTAMP)` },
+      });
   } catch (error) {
     console.error(
       "Error while recording client connected",
       error,
-      connection.address
+      `${connection.remoteAddress}:${connection.remotePort}`
     );
   }
 }

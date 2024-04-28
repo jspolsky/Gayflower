@@ -19,22 +19,15 @@ export function recordConnectionLog(
   handler_details: string
 ) {
   console.log(
-    `Handling ${handler_type} - ${handler_details}`,
-    connection.localAddress,
-    connection.localPort,
-    connection.remoteAddress,
-    connection.remotePort
+    `local='${connection.localAddress}:${connection.localPort}' remote='${connection.remoteAddress}:${connection.remotePort}' received ${handler_type} - ${handler_details}`
   );
 
-  const addressInfo = connection.address();
-  if ("address" in addressInfo) {
-    db.insert(schema.connection_log)
-      .values({
-        address: addressInfo.address,
-        port: String(addressInfo.port),
-        handler_type,
-        handler_details,
-      })
-      .catch(console.error);
-  }
+  db.insert(schema.connection_log)
+    .values({
+      address: connection.remoteAddress || "undefined",
+      port: String(connection.remotePort),
+      handler_type,
+      handler_details,
+    })
+    .catch(console.error);
 }
