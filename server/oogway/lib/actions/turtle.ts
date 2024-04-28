@@ -16,13 +16,13 @@ const TurtleSchema = z.object({
 const UpdateTurtleSchema = TurtleSchema.omit({ id: true });
 
 export async function createTurtle(formData: FormData) {
-  const { id, name } = TurtleSchema.parse({
+  const { id, name, enabled } = TurtleSchema.parse({
     id: formData.get("turtleId"),
     name: formData.get("turtleName"),
     enabled: formData.get("isEnabled"),
   });
 
-  await db.insert(schema.turtle).values([{ id, name }]);
+  await db.insert(schema.turtle).values([{ id, name, enabled }]);
 
   revalidatePath("/turtles");
   redirect("/turtles");
