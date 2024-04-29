@@ -28,7 +28,7 @@ CREATE TABLE `swipe_log` (
 	`address` text NOT NULL,
 	`port` text NOT NULL,
 	`swipe_id` text,
-	`is_allowed` integer,
+	`is_allowed` integer NOT NULL,
 	`reason` text,
 	PRIMARY KEY(`address`, `port`, `swipe_id`, `timestamp`),
 	FOREIGN KEY (`address`) REFERENCES `client`(`address`) ON UPDATE no action ON DELETE no action,
@@ -38,7 +38,7 @@ CREATE TABLE `swipe_log` (
 --> statement-breakpoint
 CREATE TABLE `turtle` (
 	`id` text PRIMARY KEY NOT NULL,
-	`name` text DEFAULT 'unassigned' NOT NULL,
-	`enabled` integer DEFAULT false,
-	`timestamp` text DEFAULT (CURRENT_TIMESTAMP)
+	`name` text DEFAULT 'UNASSIGNED' NOT NULL,
+	`enabled` integer DEFAULT false NOT NULL,
+	`timestamp` text DEFAULT (CURRENT_TIMESTAMP) NOT NULL
 );

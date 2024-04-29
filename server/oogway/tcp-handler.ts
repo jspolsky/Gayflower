@@ -3,14 +3,14 @@ import { Socket } from "net";
 import { getConfigValueOrDefault } from "./lib/data/config";
 import { recordClientConnected } from "./lib/data/client";
 import { PUMP_TIME_IN_SECONDS_CONFIG } from "./lib/schema/config";
-import { fetchTurtleById } from "./lib/data/turtle";
+import { fetchOrAddTurtle } from "./lib/data/turtle";
 import { recordConnectionLog } from "./lib/data/connection-log";
 import { recordSwipeLog } from "./lib/data/swipe-log";
 
 const connectedclients: Socket[] = [];
 
 const handleSwipeRequest = async (connection: Socket, swipeId: string) => {
-  const turtle = await fetchTurtleById(swipeId);
+  const turtle = await fetchOrAddTurtle(swipeId);
   const pumpTimeValue = await getConfigValueOrDefault(
     PUMP_TIME_IN_SECONDS_CONFIG
   );
@@ -23,13 +23,17 @@ const handleSwipeRequest = async (connection: Socket, swipeId: string) => {
     // one of them has got to be connected to a pump!
     connectedclients.forEach((c) => c.write(`PUMP ${pumpTimeValue}\r\n`));
   } else {
-    throw new Error(`Turtle does not have permission`);
+    recordSwipeLog(
+      connection,
+      swipeId,
+      false,
+      "turtle does not have permission"
+    );
+    connection.write("401 Unauthorized\r\n");
   }
 };
 
 export function handler(connection: Socket) {
-  console.log(`client connected remote port ${connection.remotePort}`);
-
   recordClientConnected(connection);
 
   connectedclients.push(connection);
@@ -66,7 +70,6 @@ function dataHandlerFor(connection: Socket) {
       } else if (requestArray[0] === "SWIP" && requestArray.length > 1) {
         const swipeId = requestArray[1];
         handleSwipeRequest(connection, swipeId).catch((error) => {
-          recordSwipeLog(connection, swipeId, false, error.message);
           console.error(
             `Error handling swip request for ${swipeId} on ${connection.remoteAddress}:${connection.remotePort}`,
             error

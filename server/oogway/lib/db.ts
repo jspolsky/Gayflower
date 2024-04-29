@@ -3,4 +3,6 @@ import { Database } from "bun:sqlite";
 
 const sqlite = new Database("mydb.sqlite", { create: true });
 
-export const db = drizzle(sqlite, { logger: false });
+export const db = drizzle(sqlite, {
+  logger: process.env.NODE_ENV !== "production",
+});

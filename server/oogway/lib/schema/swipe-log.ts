@@ -19,7 +19,7 @@ export const swipe_log = sqliteTable(
       .notNull()
       .references(() => client.port),
     swipe_id: text("swipe_id").references(() => turtle.id),
-    is_allowed: integer("is_allowed", { mode: "boolean" }),
+    is_allowed: integer("is_allowed", { mode: "boolean" }).notNull(),
     reason: text("reason"),
   },
   (table) => ({

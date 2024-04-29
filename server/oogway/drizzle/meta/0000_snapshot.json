@@ -1,7 +1,7 @@
 {
   "version": "5",
   "dialect": "sqlite",
-  "id": "4d38af75-0a95-483f-a8ef-740db0fb6827",
+  "id": "fc8690aa-c7a0-4ce8-95c8-1df3ae6b0437",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "tables": {
     "client": {
@@ -197,7 +197,7 @@
           "name": "is_allowed",
           "type": "integer",
           "primaryKey": false,
-          "notNull": false,
+          "notNull": true,
           "autoincrement": false
         },
         "reason": {
@@ -279,13 +279,13 @@
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false,
-          "default": "'unassigned'"
+          "default": "'UNASSIGNED'"
         },
         "enabled": {
           "name": "enabled",
           "type": "integer",
           "primaryKey": false,
-          "notNull": false,
+          "notNull": true,
           "autoincrement": false,
           "default": false
         },
@@ -293,7 +293,7 @@
           "name": "timestamp",
           "type": "text",
           "primaryKey": false,
-          "notNull": false,
+          "notNull": true,
           "autoincrement": false,
           "default": "(CURRENT_TIMESTAMP)"
         }

@@ -1,16 +1,10 @@
 import { UpdateTurtle, DeleteTurtle } from "@/components/turtles/buttons";
-import { fetchFilteredTurtles } from "@/lib/data/turtle";
+import { fetchTurtlesWithStats } from "@/lib/data/turtle";
 import { unstable_noStore as noStore } from "next/cache";
 
-export default async function TurtlesTable({
-  query,
-  currentPage,
-}: {
-  query: string;
-  currentPage: number;
-}) {
+export default async function TurtlesTable() {
   noStore();
-  const turtles = await fetchFilteredTurtles(query, currentPage);
+  const turtles = await fetchTurtlesWithStats();
 
   return (
     <div className="mt-6 flow-root">
@@ -51,6 +45,12 @@ export default async function TurtlesTable({
                 <th scope="col" className="px-3 py-5 font-medium">
                   Enabled?
                 </th>
+                <th scope="col" className="px-3 py-5 font-medium">
+                  Successful Swipe Count
+                </th>
+                <th scope="col" className="px-3 py-5 font-medium">
+                  Failed Swipe Count
+                </th>
                 <th scope="col" className="relative py-3 pl-6 pr-3">
                   <span className="sr-only">Edit</span>
                 </th>
@@ -70,6 +70,12 @@ export default async function TurtlesTable({
                   <td className="whitespace-nowrap px-3 py-3">{turtle.name}</td>
                   <td className="whitespace-nowrap px-3 py-3">
                     {String(turtle.enabled)}
+                  </td>
+                  <td className="whitespace-nowrap px-3 py-3">
+                    {turtle.successful_swipe_count}
+                  </td>
+                  <td className="whitespace-nowrap px-3 py-3">
+                    {turtle.failed_swipe_count}
                   </td>
                   <td className="whitespace-nowrap py-3 pl-6 pr-3">
                     <div className="flex justify-end gap-3">

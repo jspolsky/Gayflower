@@ -1,22 +1,9 @@
-import Search from "@/components/search";
 import { CreateConfig } from "@/components/configs/buttons";
-import Pagination from "@/components/pagination";
 import Table from "@/components/configs/table";
-import { fetchConfigsPages } from "@/lib/data/config";
 import { unstable_noStore as noStore } from "next/cache";
 
-export default async function Page({
-  searchParams,
-}: {
-  searchParams?: {
-    query?: string;
-    page?: string;
-  };
-}) {
+export default async function Page() {
   noStore();
-  const query = searchParams?.query || "";
-  const currentPage = Number(searchParams?.page) || 1;
-  const totalPages = await fetchConfigsPages(query);
 
   return (
     <div className="w-full">
@@ -24,13 +11,9 @@ export default async function Page({
         <h1 className={`text-2xl`}>Configurations</h1>
       </div>
       <div className="mt-4 flex items-center justify-between gap-2 md:mt-8">
-        <Search placeholder="Search Configs..." />
         <CreateConfig />
       </div>
-      <Table query={query} currentPage={currentPage} />
-      <div className="mt-5 flex w-full justify-center">
-        <Pagination totalPages={totalPages} />
-      </div>
+      <Table />
     </div>
   );
 }

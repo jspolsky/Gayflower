@@ -1,17 +1,11 @@
-import { fetchFilteredConfigs } from "@/lib/data/config";
+import { fetchConfigs } from "@/lib/data/config";
 import { unstable_noStore as noStore } from "next/cache";
 
 import { DeleteConfig, UpdateConfig } from "./buttons";
 
-export default async function ConfigTable({
-  query,
-  currentPage,
-}: {
-  query: string;
-  currentPage: number;
-}) {
+export default async function ConfigTable() {
   noStore();
-  const configs = await fetchFilteredConfigs(query, currentPage);
+  const configs = await fetchConfigs();
 
   return (
     <div className="mt-6 flow-root">
