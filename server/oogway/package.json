@@ -9,7 +9,7 @@
     "start": "concurrently -c 'blue,magenta' --prefix '{time} {name}    ' bun:next-start bun:tcp-start",
     "lint": "bunx --bun eslint .",
     "next-dev": "next dev",
-    "next-start": "next start",
+    "next-start": "next start -p 80",
     "tcp-dev": "bun run tcp-server.ts",
     "tcp-start": "NODE_ENV=production bun run tcp-server.ts",
     "migrate-db": "bun run scripts/migrate.ts",
