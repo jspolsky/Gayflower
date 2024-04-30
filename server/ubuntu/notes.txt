@@ -25,3 +25,13 @@ online - gets the server on the internet, ethernet hard link, for updates etc
 
 offline/online shell scripts are the same file, linked to each other with ln 
 so sudo ./offline goes offline, sudo ./online goes online
+
+----
+
+INSTALLING THE SERVER CODE
+
+1. get onto the server via its own wifi (SSID gayflower), then ssh to 192.168.66.1
+2. plug into ethernet port of something real
+3. sudo ./online to go online
+4. get back onto your normal wifi network 
+5. 
