@@ -1,14 +1,14 @@
-import { migrate } from "drizzle-orm/bun-sqlite/migrator";
+import { migrate } from 'drizzle-orm/bun-sqlite/migrator'
 
-import { drizzle } from "drizzle-orm/bun-sqlite";
-import { Database } from "bun:sqlite";
+import { drizzle } from 'drizzle-orm/bun-sqlite'
+import { Database } from 'bun:sqlite'
 
-const sqlite = new Database("mydb.sqlite");
-const db = drizzle(sqlite);
+const sqlite = new Database('mydb.sqlite')
+const db = drizzle(sqlite)
 
 try {
-  await migrate(db, { migrationsFolder: "./drizzle" });
-  console.log("Successfully migrated DB");
+    await migrate(db, { migrationsFolder: './drizzle' })
+    console.log('Successfully migrated DB')
 } catch (error) {
-  console.error("Error while migrating DB", error);
+    console.error('Error while migrating DB', error)
 }

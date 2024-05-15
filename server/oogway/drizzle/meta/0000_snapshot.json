@@ -1,313 +1,285 @@
 {
-  "version": "5",
-  "dialect": "sqlite",
-  "id": "fc8690aa-c7a0-4ce8-95c8-1df3ae6b0437",
-  "prevId": "00000000-0000-0000-0000-000000000000",
-  "tables": {
-    "client": {
-      "name": "client",
-      "columns": {
-        "address": {
-          "name": "address",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
+    "version": "5",
+    "dialect": "sqlite",
+    "id": "fc8690aa-c7a0-4ce8-95c8-1df3ae6b0437",
+    "prevId": "00000000-0000-0000-0000-000000000000",
+    "tables": {
+        "client": {
+            "name": "client",
+            "columns": {
+                "address": {
+                    "name": "address",
+                    "type": "text",
+                    "primaryKey": false,
+                    "notNull": true,
+                    "autoincrement": false
+                },
+                "port": {
+                    "name": "port",
+                    "type": "text",
+                    "primaryKey": false,
+                    "notNull": true,
+                    "autoincrement": false
+                },
+                "name": {
+                    "name": "name",
+                    "type": "text",
+                    "primaryKey": false,
+                    "notNull": true,
+                    "autoincrement": false,
+                    "default": "'unassigned'"
+                },
+                "created_at": {
+                    "name": "created_at",
+                    "type": "text",
+                    "primaryKey": false,
+                    "notNull": false,
+                    "autoincrement": false,
+                    "default": "(CURRENT_TIMESTAMP)"
+                },
+                "last_heartbeat": {
+                    "name": "last_heartbeat",
+                    "type": "text",
+                    "primaryKey": false,
+                    "notNull": false,
+                    "autoincrement": false,
+                    "default": "(CURRENT_TIMESTAMP)"
+                }
+            },
+            "indexes": {},
+            "foreignKeys": {},
+            "compositePrimaryKeys": {
+                "client_address_port_pk": {
+                    "columns": ["address", "port"],
+                    "name": "client_address_port_pk"
+                }
+            },
+            "uniqueConstraints": {}
         },
-        "port": {
-          "name": "port",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
+        "config": {
+            "name": "config",
+            "columns": {
+                "key": {
+                    "name": "key",
+                    "type": "text",
+                    "primaryKey": true,
+                    "notNull": true,
+                    "autoincrement": false
+                },
+                "value": {
+                    "name": "value",
+                    "type": "text",
+                    "primaryKey": false,
+                    "notNull": true,
+                    "autoincrement": false
+                }
+            },
+            "indexes": {},
+            "foreignKeys": {},
+            "compositePrimaryKeys": {},
+            "uniqueConstraints": {}
         },
-        "name": {
-          "name": "name",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false,
-          "default": "'unassigned'"
+        "connection_log": {
+            "name": "connection_log",
+            "columns": {
+                "id": {
+                    "name": "id",
+                    "type": "integer",
+                    "primaryKey": true,
+                    "notNull": true,
+                    "autoincrement": true
+                },
+                "timestamp": {
+                    "name": "timestamp",
+                    "type": "text",
+                    "primaryKey": false,
+                    "notNull": false,
+                    "autoincrement": false,
+                    "default": "(CURRENT_TIMESTAMP)"
+                },
+                "address": {
+                    "name": "address",
+                    "type": "text",
+                    "primaryKey": false,
+                    "notNull": true,
+                    "autoincrement": false
+                },
+                "port": {
+                    "name": "port",
+                    "type": "text",
+                    "primaryKey": false,
+                    "notNull": true,
+                    "autoincrement": false
+                },
+                "handler_type": {
+                    "name": "handler_type",
+                    "type": "text",
+                    "primaryKey": false,
+                    "notNull": false,
+                    "autoincrement": false
+                },
+                "handler_details": {
+                    "name": "handler_details",
+                    "type": "text",
+                    "primaryKey": false,
+                    "notNull": false,
+                    "autoincrement": false
+                }
+            },
+            "indexes": {},
+            "foreignKeys": {
+                "connection_log_address_client_address_fk": {
+                    "name": "connection_log_address_client_address_fk",
+                    "tableFrom": "connection_log",
+                    "tableTo": "client",
+                    "columnsFrom": ["address"],
+                    "columnsTo": ["address"],
+                    "onDelete": "no action",
+                    "onUpdate": "no action"
+                },
+                "connection_log_port_client_port_fk": {
+                    "name": "connection_log_port_client_port_fk",
+                    "tableFrom": "connection_log",
+                    "tableTo": "client",
+                    "columnsFrom": ["port"],
+                    "columnsTo": ["port"],
+                    "onDelete": "no action",
+                    "onUpdate": "no action"
+                }
+            },
+            "compositePrimaryKeys": {},
+            "uniqueConstraints": {}
         },
-        "created_at": {
-          "name": "created_at",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false,
-          "default": "(CURRENT_TIMESTAMP)"
+        "swipe_log": {
+            "name": "swipe_log",
+            "columns": {
+                "timestamp": {
+                    "name": "timestamp",
+                    "type": "text",
+                    "primaryKey": false,
+                    "notNull": false,
+                    "autoincrement": false,
+                    "default": "(CURRENT_TIMESTAMP)"
+                },
+                "address": {
+                    "name": "address",
+                    "type": "text",
+                    "primaryKey": false,
+                    "notNull": true,
+                    "autoincrement": false
+                },
+                "port": {
+                    "name": "port",
+                    "type": "text",
+                    "primaryKey": false,
+                    "notNull": true,
+                    "autoincrement": false
+                },
+                "swipe_id": {
+                    "name": "swipe_id",
+                    "type": "text",
+                    "primaryKey": false,
+                    "notNull": false,
+                    "autoincrement": false
+                },
+                "is_allowed": {
+                    "name": "is_allowed",
+                    "type": "integer",
+                    "primaryKey": false,
+                    "notNull": true,
+                    "autoincrement": false
+                },
+                "reason": {
+                    "name": "reason",
+                    "type": "text",
+                    "primaryKey": false,
+                    "notNull": false,
+                    "autoincrement": false
+                }
+            },
+            "indexes": {},
+            "foreignKeys": {
+                "swipe_log_address_client_address_fk": {
+                    "name": "swipe_log_address_client_address_fk",
+                    "tableFrom": "swipe_log",
+                    "tableTo": "client",
+                    "columnsFrom": ["address"],
+                    "columnsTo": ["address"],
+                    "onDelete": "no action",
+                    "onUpdate": "no action"
+                },
+                "swipe_log_port_client_port_fk": {
+                    "name": "swipe_log_port_client_port_fk",
+                    "tableFrom": "swipe_log",
+                    "tableTo": "client",
+                    "columnsFrom": ["port"],
+                    "columnsTo": ["port"],
+                    "onDelete": "no action",
+                    "onUpdate": "no action"
+                },
+                "swipe_log_swipe_id_turtle_id_fk": {
+                    "name": "swipe_log_swipe_id_turtle_id_fk",
+                    "tableFrom": "swipe_log",
+                    "tableTo": "turtle",
+                    "columnsFrom": ["swipe_id"],
+                    "columnsTo": ["id"],
+                    "onDelete": "no action",
+                    "onUpdate": "no action"
+                }
+            },
+            "compositePrimaryKeys": {
+                "swipe_log_timestamp_address_port_swipe_id_pk": {
+                    "columns": ["address", "port", "swipe_id", "timestamp"],
+                    "name": "swipe_log_timestamp_address_port_swipe_id_pk"
+                }
+            },
+            "uniqueConstraints": {}
         },
-        "last_heartbeat": {
-          "name": "last_heartbeat",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false,
-          "default": "(CURRENT_TIMESTAMP)"
+        "turtle": {
+            "name": "turtle",
+            "columns": {
+                "id": {
+                    "name": "id",
+                    "type": "text",
+                    "primaryKey": true,
+                    "notNull": true,
+                    "autoincrement": false
+                },
+                "name": {
+                    "name": "name",
+                    "type": "text",
+                    "primaryKey": false,
+                    "notNull": true,
+                    "autoincrement": false,
+                    "default": "'UNASSIGNED'"
+                },
+                "enabled": {
+                    "name": "enabled",
+                    "type": "integer",
+                    "primaryKey": false,
+                    "notNull": true,
+                    "autoincrement": false,
+                    "default": false
+                },
+                "timestamp": {
+                    "name": "timestamp",
+                    "type": "text",
+                    "primaryKey": false,
+                    "notNull": true,
+                    "autoincrement": false,
+                    "default": "(CURRENT_TIMESTAMP)"
+                }
+            },
+            "indexes": {},
+            "foreignKeys": {},
+            "compositePrimaryKeys": {},
+            "uniqueConstraints": {}
         }
-      },
-      "indexes": {},
-      "foreignKeys": {},
-      "compositePrimaryKeys": {
-        "client_address_port_pk": {
-          "columns": [
-            "address",
-            "port"
-          ],
-          "name": "client_address_port_pk"
-        }
-      },
-      "uniqueConstraints": {}
     },
-    "config": {
-      "name": "config",
-      "columns": {
-        "key": {
-          "name": "key",
-          "type": "text",
-          "primaryKey": true,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "value": {
-          "name": "value",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        }
-      },
-      "indexes": {},
-      "foreignKeys": {},
-      "compositePrimaryKeys": {},
-      "uniqueConstraints": {}
-    },
-    "connection_log": {
-      "name": "connection_log",
-      "columns": {
-        "id": {
-          "name": "id",
-          "type": "integer",
-          "primaryKey": true,
-          "notNull": true,
-          "autoincrement": true
-        },
-        "timestamp": {
-          "name": "timestamp",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false,
-          "default": "(CURRENT_TIMESTAMP)"
-        },
-        "address": {
-          "name": "address",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "port": {
-          "name": "port",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "handler_type": {
-          "name": "handler_type",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
-        },
-        "handler_details": {
-          "name": "handler_details",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
-        }
-      },
-      "indexes": {},
-      "foreignKeys": {
-        "connection_log_address_client_address_fk": {
-          "name": "connection_log_address_client_address_fk",
-          "tableFrom": "connection_log",
-          "tableTo": "client",
-          "columnsFrom": [
-            "address"
-          ],
-          "columnsTo": [
-            "address"
-          ],
-          "onDelete": "no action",
-          "onUpdate": "no action"
-        },
-        "connection_log_port_client_port_fk": {
-          "name": "connection_log_port_client_port_fk",
-          "tableFrom": "connection_log",
-          "tableTo": "client",
-          "columnsFrom": [
-            "port"
-          ],
-          "columnsTo": [
-            "port"
-          ],
-          "onDelete": "no action",
-          "onUpdate": "no action"
-        }
-      },
-      "compositePrimaryKeys": {},
-      "uniqueConstraints": {}
-    },
-    "swipe_log": {
-      "name": "swipe_log",
-      "columns": {
-        "timestamp": {
-          "name": "timestamp",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false,
-          "default": "(CURRENT_TIMESTAMP)"
-        },
-        "address": {
-          "name": "address",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "port": {
-          "name": "port",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "swipe_id": {
-          "name": "swipe_id",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
-        },
-        "is_allowed": {
-          "name": "is_allowed",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "reason": {
-          "name": "reason",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
-        }
-      },
-      "indexes": {},
-      "foreignKeys": {
-        "swipe_log_address_client_address_fk": {
-          "name": "swipe_log_address_client_address_fk",
-          "tableFrom": "swipe_log",
-          "tableTo": "client",
-          "columnsFrom": [
-            "address"
-          ],
-          "columnsTo": [
-            "address"
-          ],
-          "onDelete": "no action",
-          "onUpdate": "no action"
-        },
-        "swipe_log_port_client_port_fk": {
-          "name": "swipe_log_port_client_port_fk",
-          "tableFrom": "swipe_log",
-          "tableTo": "client",
-          "columnsFrom": [
-            "port"
-          ],
-          "columnsTo": [
-            "port"
-          ],
-          "onDelete": "no action",
-          "onUpdate": "no action"
-        },
-        "swipe_log_swipe_id_turtle_id_fk": {
-          "name": "swipe_log_swipe_id_turtle_id_fk",
-          "tableFrom": "swipe_log",
-          "tableTo": "turtle",
-          "columnsFrom": [
-            "swipe_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "no action",
-          "onUpdate": "no action"
-        }
-      },
-      "compositePrimaryKeys": {
-        "swipe_log_timestamp_address_port_swipe_id_pk": {
-          "columns": [
-            "address",
-            "port",
-            "swipe_id",
-            "timestamp"
-          ],
-          "name": "swipe_log_timestamp_address_port_swipe_id_pk"
-        }
-      },
-      "uniqueConstraints": {}
-    },
-    "turtle": {
-      "name": "turtle",
-      "columns": {
-        "id": {
-          "name": "id",
-          "type": "text",
-          "primaryKey": true,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "name": {
-          "name": "name",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false,
-          "default": "'UNASSIGNED'"
-        },
-        "enabled": {
-          "name": "enabled",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false,
-          "default": false
-        },
-        "timestamp": {
-          "name": "timestamp",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false,
-          "default": "(CURRENT_TIMESTAMP)"
-        }
-      },
-      "indexes": {},
-      "foreignKeys": {},
-      "compositePrimaryKeys": {},
-      "uniqueConstraints": {}
+    "enums": {},
+    "_meta": {
+        "schemas": {},
+        "tables": {},
+        "columns": {}
     }
-  },
-  "enums": {},
-  "_meta": {
-    "schemas": {},
-    "tables": {},
-    "columns": {}
-  }
 }
