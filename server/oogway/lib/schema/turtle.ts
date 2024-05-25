@@ -14,3 +14,7 @@ export const turtle = sqliteTable('turtle', {
 
 export type Turtle = typeof turtle.$inferSelect
 export type NewTurtle = typeof turtle.$inferInsert
+export type TurtleWithStats = Turtle & {
+    successful_swipe_count: number
+    failed_swipe_count: number
+}

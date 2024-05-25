@@ -1,92 +1,98 @@
 'use client'
 
 import * as schema from '@/lib/schema/turtle'
-import Link from 'next/link'
 import { updateTurtle } from '@/lib/actions/turtle'
-import { Button } from '../button'
+import { useState } from 'react'
+import { Switch } from '@headlessui/react'
+import { PencilIcon } from '@heroicons/react/24/outline'
+import { GoToTurtleDetails } from './buttons'
+import clsx from 'clsx'
+
+function classNames(...classes: string[]) {
+    return classes.filter(Boolean).join(' ')
+}
 
 export default function EditTurtleForm({
     turtle,
 }: {
-    turtle: schema.NewTurtle
+    turtle: schema.TurtleWithStats
 }) {
-    const updateTurtleWithId = updateTurtle.bind(null, turtle.id)
+    const [enabled, setEnabled] = useState(turtle.enabled || false)
+
+    const updateTurtleWithId = (formDate: FormData) =>
+        updateTurtle(turtle.id, enabled, formDate)
+
     return (
         <form action={updateTurtleWithId}>
-            <div className="rounded-md bg-gray-50 p-4 md:p-6">
-                {/* Turtle ID */}
-                <div className="mb-4">
-                    <label
-                        htmlFor="turtleId"
-                        className="mb-2 block text-sm font-medium"
-                    >
-                        Choose an id
-                    </label>
-                    <div className="relative mt-2 rounded-md">
-                        <div className="relative">
-                            <input
-                                id="turtleId"
-                                name="turtleId"
-                                type="text"
-                                defaultValue={turtle.id}
-                                placeholder="Enter id"
-                                className="peer block w-full rounded-md border border-gray-200 py-2 pl-10 text-sm outline-2 placeholder:text-gray-500"
-                            />
-                        </div>
-                    </div>
-                </div>
-
-                {/* Turtle Name */}
-                <div className="mb-4">
-                    <label
-                        htmlFor="turtleName"
-                        className="mb-2 block text-sm font-medium"
-                    >
-                        Choose a name
-                    </label>
-                    <div className="relative mt-2 rounded-md">
-                        <div className="relative">
-                            <input
-                                id="turtleName"
-                                name="turtleName"
-                                type="text"
-                                defaultValue={turtle.name}
-                                placeholder="Enter id"
-                                className="peer block w-full rounded-md border border-gray-200 py-2 pl-10 text-sm outline-2 placeholder:text-gray-500"
-                            />
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div className="mb-4">
+            <div className="flex w-full items-center justify-between py-3">
                 <label
-                    htmlFor="isEnabled"
-                    className="mb-2 block text-sm font-medium"
+                    htmlFor="turtleName"
+                    className="block text-sm font-medium leading-6 text-gray-900"
                 >
-                    Enabled?
+                    {turtle.id}
                 </label>
-                <div className="flex border-gray-200 relative mt-2 rounded-md">
-                    <div className="relative">
-                        <input
-                            id="isEnabled"
-                            name="isEnabled"
-                            type="checkbox"
-                            defaultChecked={turtle.enabled || false}
-                            className="peer block w-full rounded-md border border-gray-200 py-2 pl-10 text-sm outline-2 placeholder:text-gray-500"
-                        />
+                <div className="flex justify-end gap-2">
+                    <span
+                        className={clsx(' rounded-full px-3 py-0.5 ', {
+                            'bg-green-400': turtle.successful_swipe_count,
+                            'bg-green-100': !turtle.successful_swipe_count,
+                        })}
+                    >
+                        ✔︎ {turtle.successful_swipe_count}
+                    </span>
+                    <span
+                        className={clsx(' rounded-full px-3 py-0.5 ', {
+                            'bg-red-400': turtle.failed_swipe_count,
+                            'bg-red-100': !turtle.failed_swipe_count,
+                        })}
+                    >
+                        ✖︎ {turtle.failed_swipe_count}
+                    </span>
+                </div>
+            </div>
+            <div className="relative mt-2 rounded-md shadow-sm">
+                <input
+                    type="text"
+                    name="turtleName"
+                    id="turtleName"
+                    className="inline-block w-full rounded-md border-0 py-1.5 px-2 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-sky-600 sm:text-sm sm:leading-6"
+                    placeholder="Name"
+                    defaultValue={turtle.name}
+                />
+                <div className="flex w-full items-center justify-between py-3">
+                    <div>
+                        <Switch
+                            checked={enabled}
+                            onChange={setEnabled}
+                            className={classNames(
+                                enabled ? 'bg-sky-600' : 'bg-gray-200',
+                                'inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-sky-600 focus:ring-offset-2'
+                            )}
+                        >
+                            <span
+                                aria-hidden="true"
+                                className={classNames(
+                                    enabled ? 'translate-x-5' : 'translate-x-0',
+                                    'inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out'
+                                )}
+                            />
+                        </Switch>
+                    </div>
+                    <div className="flex justify-end gap-2">
+                        <GoToTurtleDetails id={turtle.id} />
+                        <button
+                            type="submit"
+                            className="float-right items-center rounded-md p-1 bg-white text-sm font-semibold text-gray-900 ring-1 ring-inset ring-gray-300 hover:bg-gray-50"
+                        >
+                            <PencilIcon className="w-5" />
+                        </button>
                     </div>
                 </div>
             </div>
-            <div className="mt-6 flex justify-end gap-4">
-                <Link
-                    href="/turtles"
-                    className="flex h-10 items-center rounded-lg bg-gray-100 px-4 text-sm font-medium text-gray-600 transition-colors hover:bg-gray-200"
-                >
-                    Cancel
-                </Link>
-                <Button type="submit">Edit Turtle</Button>
-            </div>
+
+            <p className="mt-2 text-sm text-gray-500" id="form-description">
+                created at {turtle.created_at} UTC
+            </p>
         </form>
     )
 }

@@ -1,6 +1,11 @@
 import { like, sql, or, eq, count } from 'drizzle-orm'
 import { db } from '../db'
-import { turtle, Turtle, UNASSIGNED_TURTLE_NAME } from '../schema/turtle'
+import {
+    turtle,
+    Turtle,
+    TurtleWithStats,
+    UNASSIGNED_TURTLE_NAME,
+} from '../schema/turtle'
 import { swipe_log } from '../schema/swipe-log'
 
 export async function fetchTurtlesWithStats(): Promise<
@@ -30,16 +35,22 @@ export async function fetchTurtlesWithStats(): Promise<
     }
 }
 
-export async function fetchUnassignedTurtles(): Promise<Turtle[]> {
+export async function fetchTurtleWithStatsById(
+    id: string
+): Promise<TurtleWithStats> {
     const result = await db
-        .select()
+        .select({
+            id: turtle.id,
+            name: turtle.name,
+            enabled: turtle.enabled,
+            created_at: turtle.created_at,
+            successful_swipe_count: sql<number>`cast(count(iif(${swipe_log.is_allowed} = 1, 1, null)) as int)`,
+            failed_swipe_count: sql<number>`cast(count(iif(${swipe_log.is_allowed} = 0, 1, null)) as int)`,
+        })
         .from(turtle)
-        .where(eq(turtle.name, UNASSIGNED_TURTLE_NAME))
-    return result
-}
-
-export async function fetchTurtleById(id: string): Promise<Turtle> {
-    const result = await db.select().from(turtle).where(eq(turtle.id, id))
+        .where(eq(turtle.id, id))
+        .leftJoin(swipe_log, eq(turtle.id, swipe_log.swipe_id))
+        .groupBy(turtle.id)
 
     if (result[0]) return result[0]
     else throw new Error(`Turtle with id ${id} doesn't exist`)

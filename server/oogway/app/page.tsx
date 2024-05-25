@@ -1,101 +1,61 @@
-import { DeleteTurtle, UpdateTurtle } from '@/components/turtles/buttons'
-import { fetchUnassignedTurtles } from '@/lib/data/turtle'
+import EditTurtleForm from '@/components/turtles/edit-form'
+import { fetchTurtlesWithStats } from '@/lib/data/turtle'
+import { UNASSIGNED_TURTLE_NAME } from '@/lib/schema/turtle'
 import { unstable_noStore as noStore } from 'next/cache'
+import clsx from 'clsx'
 
 export default async function HomePage() {
     noStore()
-    const unassignedTurtles = await fetchUnassignedTurtles()
+    const turtles = await fetchTurtlesWithStats()
+
+    const unassigned = turtles.filter((t) => t.name === UNASSIGNED_TURTLE_NAME)
 
     return (
         <div>
-            <h1>Home Page</h1>
-            <div className="mt-6 flow-root">
-                <div className="inline-block min-w-full align-middle">
-                    <div className="rounded-lg bg-gray-50 p-2 md:pt-0">
-                        <div className="md:hidden">
-                            {unassignedTurtles?.map((turtle) => (
-                                <div
-                                    key={turtle.id}
-                                    className="mb-2 w-full rounded-md bg-white p-4"
-                                >
-                                    <div className="flex items-center justify-between border-b pb-4">
-                                        <div>
-                                            <div className="mb-2 flex items-center">
-                                                <p>{turtle.id}</p>
-                                            </div>
-                                            <p className="text-sm text-gray-500">
-                                                {turtle.name}
-                                            </p>
-                                        </div>
-                                    </div>
-                                    <div className="flex w-full items-center justify-between pt-4">
-                                        <div className="flex justify-end gap-2">
-                                            <UpdateTurtle id={turtle.id} />
-                                            <DeleteTurtle id={turtle.id} />
-                                        </div>
-                                    </div>
-                                </div>
-                            ))}
-                        </div>
-                        <table className="hidden min-w-full text-gray-900 md:table">
-                            <thead className="rounded-lg text-left text-sm font-normal">
-                                <tr>
-                                    <th
-                                        scope="col"
-                                        className="px-3 py-5 font-medium"
-                                    >
-                                        ID
-                                    </th>
-                                    <th
-                                        scope="col"
-                                        className="px-3 py-5 font-medium"
-                                    >
-                                        Name
-                                    </th>
-                                    <th
-                                        scope="col"
-                                        className="px-3 py-5 font-medium"
-                                    >
-                                        Enabled?
-                                    </th>
-                                    <th
-                                        scope="col"
-                                        className="relative py-3 pl-6 pr-3"
-                                    >
-                                        <span className="sr-only">Edit</span>
-                                    </th>
-                                </tr>
-                            </thead>
-                            <tbody className="bg-white">
-                                {unassignedTurtles?.map((turtle) => (
-                                    <tr
+            <details open={!!unassigned.length}>
+                <summary>Unassigned Turtles</summary>
+                <div className="mt-6 flow-root">
+                    <div className="inline-block min-w-full align-middle">
+                        <div className="rounded-lg bg-gray-50 p-2 md:pt-0">
+                            <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
+                                {unassigned?.map((turtle) => (
+                                    <div
                                         key={turtle.id}
-                                        className="w-full border-b py-3 text-sm last-of-type:border-none [&:first-child>td:first-child]:rounded-tl-lg [&:first-child>td:last-child]:rounded-tr-lg [&:last-child>td:first-child]:rounded-bl-lg [&:last-child>td:last-child]:rounded-br-lg"
+                                        className="p-2.5 col-span-1 divide-y divide-gray-200 rounded-lg bg-white shadow m-3"
                                     >
-                                        <td className="whitespace-nowrap py-3 pl-6 pr-3">
-                                            <div className="flex items-center gap-3">
-                                                <p>{turtle.id}</p>
-                                            </div>
-                                        </td>
-                                        <td className="whitespace-nowrap px-3 py-3">
-                                            {turtle.name}
-                                        </td>
-                                        <td className="whitespace-nowrap px-3 py-3">
-                                            {String(turtle.enabled)}
-                                        </td>
-                                        <td className="whitespace-nowrap py-3 pl-6 pr-3">
-                                            <div className="flex justify-end gap-3">
-                                                <UpdateTurtle id={turtle.id} />
-                                                <DeleteTurtle id={turtle.id} />
-                                            </div>
-                                        </td>
-                                    </tr>
+                                        <EditTurtleForm
+                                            key={turtle.id}
+                                            turtle={turtle}
+                                        />
+                                    </div>
                                 ))}
-                            </tbody>
-                        </table>
+                            </div>
+                        </div>
                     </div>
                 </div>
-            </div>
+            </details>
+            <details>
+                <summary>All Turtles</summary>
+                <div className="mt-6 flow-root">
+                    <div className="inline-block min-w-full align-middle">
+                        <div className="rounded-lg bg-gray-50 p-2 md:pt-0">
+                            <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
+                                {turtles?.map((turtle) => (
+                                    <div
+                                        key={turtle.id}
+                                        className="p-2.5 col-span-1 divide-y divide-gray-200 rounded-lg bg-white shadow m-3"
+                                    >
+                                        <EditTurtleForm
+                                            key={turtle.id}
+                                            turtle={turtle}
+                                        />
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </details>
         </div>
     )
 }

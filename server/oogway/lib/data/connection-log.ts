@@ -1,10 +1,14 @@
 import { Socket } from 'net'
 import { db } from '../db'
-import * as schema from '../schema/connection-log'
+import { connection_log, ConnectionLog } from '../schema/connection-log'
+import { desc } from 'drizzle-orm'
 
-export async function fetchConnectionLog(): Promise<schema.ConnectionLog[]> {
+export async function fetchConnectionLog(): Promise<ConnectionLog[]> {
     try {
-        const result = db.select().from(schema.connection_log)
+        const result = db
+            .select()
+            .from(connection_log)
+            .orderBy(desc(connection_log.timestamp))
 
         return result
     } catch (error) {
@@ -22,7 +26,7 @@ export function recordConnectionLog(
         `local='${connection.localAddress}:${connection.localPort}' remote='${connection.remoteAddress}:${connection.remotePort}' received ${handler_type} - ${handler_details}`
     )
 
-    db.insert(schema.connection_log)
+    db.insert(connection_log)
         .values({
             address: connection.remoteAddress || 'undefined',
             port: String(connection.remotePort),

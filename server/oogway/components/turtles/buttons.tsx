@@ -1,36 +1,43 @@
 import { deleteTurtle } from '@/lib/actions/turtle'
-import { PencilIcon, PlusIcon, TrashIcon } from '@heroicons/react/24/outline'
+import {
+    TrashIcon,
+    DocumentMagnifyingGlassIcon,
+} from '@heroicons/react/24/outline'
 import Link from 'next/link'
 
-export function CreateTurtle() {
+export function GoToTurtleDetails({
+    id,
+    disabled,
+}: {
+    id: string
+    disabled?: boolean
+}) {
     return (
         <Link
-            href="/turtles/create"
-            className="flex h-10 items-center rounded-lg bg-blue-600 px-4 text-sm font-medium text-white transition-colors hover:bg-blue-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600"
-        >
-            <span className="hidden md:block">Create Turtle</span>{' '}
-            <PlusIcon className="h-5 md:ml-4" />
-        </Link>
-    )
-}
-
-export function UpdateTurtle({ id }: { id: string }) {
-    return (
-        <Link
-            href={`/turtles/${id}/edit`}
+            href={`/turtles/${id}`}
             className="rounded-md border p-2 hover:bg-gray-100"
+            aria-disabled={disabled}
         >
-            <PencilIcon className="w-5" />
+            <DocumentMagnifyingGlassIcon className="w-5" />
         </Link>
     )
 }
 
-export function DeleteTurtle({ id }: { id: string }) {
+export function DeleteTurtle({
+    id,
+    disabled,
+}: {
+    id: string
+    disabled?: boolean
+}) {
     const deleteTurtleWithId = deleteTurtle.bind(null, id)
 
     return (
         <form action={deleteTurtleWithId}>
-            <button className="rounded-md border p-2 hover:bg-gray-100">
+            <button
+                className="rounded-md border p-2 hover:bg-gray-100"
+                disabled={disabled}
+            >
                 <span className="sr-only">Delete</span>
                 <TrashIcon className="w-4" />
             </button>

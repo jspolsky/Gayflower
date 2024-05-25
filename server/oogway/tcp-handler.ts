@@ -6,6 +6,7 @@ import { PUMP_TIME_IN_SECONDS_CONFIG } from './lib/schema/config'
 import { fetchOrAddTurtle } from './lib/data/turtle'
 import { recordConnectionLog } from './lib/data/connection-log'
 import { recordSwipeLog } from './lib/data/swipe-log'
+import { UNASSIGNED_TURTLE_NAME } from './lib/schema/turtle'
 
 const connectedclients: Socket[] = []
 
@@ -15,7 +16,6 @@ const handleSwipeRequest = async (connection: Socket, swipeId: string) => {
         PUMP_TIME_IN_SECONDS_CONFIG
     )
 
-    // record swipe
     if (turtle.enabled) {
         recordSwipeLog(connection, swipeId, true, 'turtle has permission')
         connection.write(`200 OK ${pumpTimeValue}\r\n`)
@@ -23,12 +23,14 @@ const handleSwipeRequest = async (connection: Socket, swipeId: string) => {
         // one of them has got to be connected to a pump!
         connectedclients.forEach((c) => c.write(`PUMP ${pumpTimeValue}\r\n`))
     } else {
-        recordSwipeLog(
-            connection,
-            swipeId,
-            false,
-            'turtle does not have permission'
-        )
+        if (turtle.name !== UNASSIGNED_TURTLE_NAME) {
+            recordSwipeLog(
+                connection,
+                swipeId,
+                false,
+                'turtle does not have permission'
+            )
+        }
         connection.write('401 Unauthorized\r\n')
     }
 }
