@@ -11,22 +11,29 @@ const TurtleSchema = z.object({
     id: z.string(),
     name: z.string(),
     enabled: z.coerce.boolean(),
+    watermaster: z.coerce.boolean(),
 })
 
 const UpdateTurtleSchema = TurtleSchema.omit({ id: true })
 
-export async function updateTurtle(
-    id: string,
-    enabled: boolean,
+export async function updateTurtle({
+    id,
+    enabled,
+    watermaster,
+    formData,
+}: {
+    id: string
+    enabled: boolean
+    watermaster: boolean
     formData: FormData
-) {
+}) {
     const { name } = UpdateTurtleSchema.parse({
         name: formData.get('turtleName'),
     })
 
     await db
         .update(schema.turtle)
-        .set({ name: name, enabled: enabled })
+        .set({ name: name, enabled: enabled, watermaster: watermaster })
         .where(eq(schema.turtle.id, id))
         .returning({ newName: schema.turtle.name })
 

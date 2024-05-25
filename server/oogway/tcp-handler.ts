@@ -2,7 +2,10 @@ import { Socket } from 'net'
 
 import { getConfigValueOrDefault } from './lib/data/config'
 import { recordClientConnected } from './lib/data/client'
-import { PUMP_TIME_IN_SECONDS_CONFIG } from './lib/schema/config'
+import {
+    PUMP_TIME_IN_SECONDS_CONFIG,
+    WATERMASTER_PUMP_TIME_IN_SECONDS,
+} from './lib/schema/config'
 import { fetchOrAddTurtle } from './lib/data/turtle'
 import { recordConnectionLog } from './lib/data/connection-log'
 import { recordSwipeLog } from './lib/data/swipe-log'
@@ -13,8 +16,11 @@ const connectedclients: Socket[] = []
 const handleSwipeRequest = async (connection: Socket, swipeId: string) => {
     const turtle = await fetchOrAddTurtle(swipeId)
     const pumpTimeValue = await getConfigValueOrDefault(
-        PUMP_TIME_IN_SECONDS_CONFIG
+        turtle.watermaster
+            ? WATERMASTER_PUMP_TIME_IN_SECONDS
+            : PUMP_TIME_IN_SECONDS_CONFIG
     )
+    console.log(`turtle ${turtle} has ${pumpTimeValue}`)
 
     if (turtle.enabled) {
         recordSwipeLog(connection, swipeId, true, 'turtle has permission')

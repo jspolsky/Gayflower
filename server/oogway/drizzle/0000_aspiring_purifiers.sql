@@ -40,5 +40,6 @@ CREATE TABLE `turtle` (
 	`id` text PRIMARY KEY NOT NULL,
 	`name` text DEFAULT 'UNASSIGNED' NOT NULL,
 	`enabled` integer DEFAULT false NOT NULL,
+	`watermaster` integer DEFAULT false NOT NULL,
 	`timestamp` text DEFAULT (CURRENT_TIMESTAMP) NOT NULL
 );

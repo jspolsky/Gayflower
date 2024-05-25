@@ -12,7 +12,7 @@ export default async function HomePage() {
 
     return (
         <div>
-            <details open={!!unassigned.length}>
+            <details open>
                 <summary>Unassigned Turtles</summary>
                 <div className="mt-6 flow-root">
                     <div className="inline-block min-w-full align-middle">
@@ -33,8 +33,21 @@ export default async function HomePage() {
                         </div>
                     </div>
                 </div>
+                <div className="relative">
+                    <div
+                        className="absolute inset-0 flex items-center"
+                        aria-hidden="true"
+                    >
+                        <div className="w-full border-t border-gray-300" />
+                    </div>
+                    <div className="relative flex justify-center">
+                        <span className="bg-white px-2 text-sm text-gray-500">
+                            🐢
+                        </span>
+                    </div>
+                </div>
             </details>
-            <details>
+            <details open>
                 <summary>All Turtles</summary>
                 <div className="mt-6 flow-root">
                     <div className="inline-block min-w-full align-middle">

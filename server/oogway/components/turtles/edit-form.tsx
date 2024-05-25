@@ -4,7 +4,11 @@ import * as schema from '@/lib/schema/turtle'
 import { updateTurtle } from '@/lib/actions/turtle'
 import { useState } from 'react'
 import { Switch } from '@headlessui/react'
-import { PencilIcon } from '@heroicons/react/24/outline'
+import {
+    PencilIcon,
+    CheckBadgeIcon,
+    RocketLaunchIcon,
+} from '@heroicons/react/24/outline'
 import { GoToTurtleDetails } from './buttons'
 import clsx from 'clsx'
 
@@ -18,9 +22,15 @@ export default function EditTurtleForm({
     turtle: schema.TurtleWithStats
 }) {
     const [enabled, setEnabled] = useState(turtle.enabled || false)
+    const [watermaster, setWatermaster] = useState(turtle.watermaster || false)
 
     const updateTurtleWithId = (formDate: FormData) =>
-        updateTurtle(turtle.id, enabled, formDate)
+        updateTurtle({
+            id: turtle.id,
+            enabled,
+            watermaster,
+            formData: formDate,
+        })
 
     return (
         <form action={updateTurtleWithId}>
@@ -60,20 +70,58 @@ export default function EditTurtleForm({
                     defaultValue={turtle.name}
                 />
                 <div className="flex w-full items-center justify-between py-3">
-                    <div>
+                    <div className="flex gap-1">
+                        <CheckBadgeIcon className="w-5" />
                         <Switch
                             checked={enabled}
                             onChange={setEnabled}
-                            className={classNames(
-                                enabled ? 'bg-sky-600' : 'bg-gray-200',
-                                'inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-sky-600 focus:ring-offset-2'
-                            )}
+                            className="group relative inline-flex h-5 w-10 flex-shrink-0 cursor-pointer items-center justify-center rounded-full focus:outline-none focus:ring-2 focus:ring-sky-600 focus:ring-offset-2"
                         >
+                            <span className="sr-only">Enabled</span>
+                            <span
+                                aria-hidden="true"
+                                className="pointer-events-none absolute h-full w-full rounded-md bg-white"
+                            />
+                            <span
+                                aria-hidden="true"
+                                className={classNames(
+                                    enabled ? 'bg-sky-600' : 'bg-gray-200',
+                                    'pointer-events-none absolute mx-auto h-4 w-9 rounded-full transition-colors duration-200 ease-in-out'
+                                )}
+                            />
                             <span
                                 aria-hidden="true"
                                 className={classNames(
                                     enabled ? 'translate-x-5' : 'translate-x-0',
-                                    'inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out'
+                                    'pointer-events-none absolute left-0 inline-block h-5 w-5 transform rounded-full border border-gray-200 bg-white shadow ring-0 transition-transform duration-200 ease-in-out'
+                                )}
+                            />
+                        </Switch>
+                        <RocketLaunchIcon className="w-5 ml-3" />
+                        <Switch
+                            checked={watermaster}
+                            onChange={setWatermaster}
+                            className="group relative inline-flex h-5 w-10 flex-shrink-0 cursor-pointer items-center justify-center rounded-full focus:outline-none focus:ring-2 focus:ring-sky-600 focus:ring-offset-2"
+                        >
+                            <span className="sr-only">Watermaster</span>
+                            <span
+                                aria-hidden="true"
+                                className="pointer-events-none absolute h-full w-full rounded-md bg-white"
+                            />
+                            <span
+                                aria-hidden="true"
+                                className={classNames(
+                                    watermaster ? 'bg-sky-600' : 'bg-gray-200',
+                                    'pointer-events-none absolute mx-auto h-4 w-9 rounded-full transition-colors duration-200 ease-in-out'
+                                )}
+                            />
+                            <span
+                                aria-hidden="true"
+                                className={classNames(
+                                    watermaster
+                                        ? 'translate-x-5'
+                                        : 'translate-x-0',
+                                    'pointer-events-none absolute left-0 inline-block h-5 w-5 transform rounded-full border border-gray-200 bg-white shadow ring-0 transition-transform duration-200 ease-in-out'
                                 )}
                             />
                         </Switch>
@@ -82,7 +130,7 @@ export default function EditTurtleForm({
                         <GoToTurtleDetails id={turtle.id} />
                         <button
                             type="submit"
-                            className="float-right items-center rounded-md p-1 bg-white text-sm font-semibold text-gray-900 ring-1 ring-inset ring-gray-300 hover:bg-gray-50"
+                            className="float-right items-center rounded-md p-2 bg-white text-sm font-semibold text-gray-900 ring-1 ring-inset ring-gray-300 hover:bg-gray-50"
                         >
                             <PencilIcon className="w-5" />
                         </button>

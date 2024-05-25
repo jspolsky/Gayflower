@@ -1,11 +1,6 @@
 import { like, sql, or, eq, count } from 'drizzle-orm'
 import { db } from '../db'
-import {
-    turtle,
-    Turtle,
-    TurtleWithStats,
-    UNASSIGNED_TURTLE_NAME,
-} from '../schema/turtle'
+import { turtle, Turtle, TurtleWithStats } from '../schema/turtle'
 import { swipe_log } from '../schema/swipe-log'
 
 export async function fetchTurtlesWithStats(): Promise<
@@ -20,6 +15,7 @@ export async function fetchTurtlesWithStats(): Promise<
                 id: turtle.id,
                 name: turtle.name,
                 enabled: turtle.enabled,
+                watermaster: turtle.watermaster,
                 created_at: turtle.created_at,
                 successful_swipe_count: sql<number>`cast(count(iif(${swipe_log.is_allowed} = 1, 1, null)) as int)`,
                 failed_swipe_count: sql<number>`cast(count(iif(${swipe_log.is_allowed} = 0, 1, null)) as int)`,
@@ -43,6 +39,7 @@ export async function fetchTurtleWithStatsById(
             id: turtle.id,
             name: turtle.name,
             enabled: turtle.enabled,
+            watermaster: turtle.watermaster,
             created_at: turtle.created_at,
             successful_swipe_count: sql<number>`cast(count(iif(${swipe_log.is_allowed} = 1, 1, null)) as int)`,
             failed_swipe_count: sql<number>`cast(count(iif(${swipe_log.is_allowed} = 0, 1, null)) as int)`,

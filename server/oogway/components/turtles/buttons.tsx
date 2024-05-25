@@ -1,8 +1,5 @@
 import { deleteTurtle } from '@/lib/actions/turtle'
-import {
-    TrashIcon,
-    DocumentMagnifyingGlassIcon,
-} from '@heroicons/react/24/outline'
+import { TrashIcon, ArrowRightCircleIcon } from '@heroicons/react/24/outline'
 import Link from 'next/link'
 
 export function GoToTurtleDetails({
@@ -18,7 +15,7 @@ export function GoToTurtleDetails({
             className="rounded-md border p-2 hover:bg-gray-100"
             aria-disabled={disabled}
         >
-            <DocumentMagnifyingGlassIcon className="w-5" />
+            <ArrowRightCircleIcon className="w-5" />
         </Link>
     )
 }
@@ -35,11 +32,11 @@ export function DeleteTurtle({
     return (
         <form action={deleteTurtleWithId}>
             <button
-                className="rounded-md border p-2 hover:bg-gray-100"
+                className="inline-flex items-center gap-x-2 rounded-md bg-red-600 px-3.5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-red-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-600"
                 disabled={disabled}
             >
-                <span className="sr-only">Delete</span>
-                <TrashIcon className="w-4" />
+                <TrashIcon className="-ml-0.5 h-5 w-5" />
+                Delete
             </button>
         </form>
     )

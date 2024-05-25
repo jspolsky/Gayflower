@@ -18,4 +18,11 @@ export const PUMP_TIME_IN_SECONDS_CONFIG: KnownConfig<number> = {
     defaultValue: 90,
 }
 
-export const ALL_KNOWN_CONFIGS = [PUMP_TIME_IN_SECONDS_CONFIG]
+export const WATERMASTER_PUMP_TIME_IN_SECONDS: KnownConfig<number> = {
+    key: 'WATERMASTER_PUMP_TIME_IN_SECONDS',
+    defaultValue: 600,
+}
+export const ALL_KNOWN_CONFIGS = [
+    PUMP_TIME_IN_SECONDS_CONFIG,
+    WATERMASTER_PUMP_TIME_IN_SECONDS,
+]
