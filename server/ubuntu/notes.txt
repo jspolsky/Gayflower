@@ -30,8 +30,8 @@ so sudo ./offline goes offline, sudo ./online goes online
 
 INSTALLING THE SERVER CODE
 
-1. get onto the server via its own wifi (SSID gayflower), then ssh to 192.168.66.1
-2. plug into ethernet port of something real
-3. sudo ./online to go online
-4. get back onto your normal wifi network 
-5. 
+1. Checkout the branch you want to deploy and run `bun install` in the `oogway` directory
+2. Create an archive using `tar czf oogway.tgz oogway/`
+3. Connect to the server wifi (SSID gayflower) and scp the archive to 192.168.66.1
+4. ssh into the server and run `tar xvf oogway.tgz`
+
