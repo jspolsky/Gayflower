@@ -35,3 +35,23 @@ INSTALLING THE SERVER CODE
 3. Connect to the server wifi (SSID gayflower) and scp the archive to 192.168.66.1
 4. ssh into the server and run `tar xvf oogway.tgz`
 
+----
+
+CONFIGURING THE WIFI ADAPTER
+
+There is a tiny TPLink Wifi / Ethernet access point used on playa so that we can 
+add/remove turtles and settings using our smart phones.
+
+Here is how it should be configured:
+
+Operation Mode: Access Point
+Wireless: Enabled
+SSID: gayflower
+Password: (our usual password)
+
+Using: STATIC IP
+IP Address: 192.168.66.3
+Subnet Mask: 255.255.255.0
+Gateway: 192.168.66.1
+DHCP should be DISABLED
+
